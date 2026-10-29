@@ -183,7 +183,20 @@ class StandardLibraryTest {
                 Arguments.of("\"abc\".between(\"[\", \"]\")", "null"),
                 Arguments.of("\"[abc\".between(\"[\", \"]\")", "null"),
                 Arguments.of("\"[]\".between(\"[\", \"]\").length", "0"),
-                Arguments.of("\"abc\".between(\"a\", \"z\") == null", "true"));
+                Arguments.of("\"abc\".between(\"a\", \"z\") == null", "true"),
+                // format is the named-field interpolation every report line
+                // hand-assembles with padEnd and `+`: {field} reads the map, a
+                // value is displayed the way println and ${...} display it (a
+                // string bare, a number as written), a doubled brace is the
+                // literal brace, and a field repeats wherever it is named.
+                Arguments.of("\"{name}:{port}\".format({\"name\": \"host\","
+                        + " \"port\": 8080})", "host:8080"),
+                Arguments.of("\"{{literal}} {v}\".format({\"v\": 1})", "{literal} 1"),
+                Arguments.of("\"no fields\".format({\"v\": 1})", "no fields"),
+                Arguments.of("\"a={v} b={v}\".format({\"v\": 1})", "a=1 b=1"),
+                Arguments.of("\"x={d}\".format({\"d\": 2.5})", "x=2.5"),
+                Arguments.of("\"s={s}\".format({\"s\": \"bare\"})", "s=bare"),
+                Arguments.of("\"}}{v}{{\".format({\"v\": 7})", "}7{"));
     }
 
     @ParameterizedTest(name = "{0}")
@@ -678,7 +691,18 @@ class StandardLibraryTest {
                 Arguments.of("\"a\".between(1, \"]\")", "TypeError"),
                 Arguments.of("\"a\".between(\"[\", 1)", "TypeError"),
                 Arguments.of("use std.glob\nglob.matches(\"a\")", "ValueError"),
-                Arguments.of("use std.glob\nglob.matches(1, \"a\")", "TypeError"));
+                Arguments.of("use std.glob\nglob.matches(1, \"a\")", "TypeError"),
+                // format refuses a hole in the template by name rather than
+                // dropping the column silently: an unknown field, an
+                // unterminated or lone brace and an empty {} are each a
+                // ValueError, a non-map is a TypeError, and no argument at all
+                // is told it needs one.
+                Arguments.of("\"{a}\".format({\"b\": 1})", "ValueError"),
+                Arguments.of("\"{a\".format({\"a\": 1})", "ValueError"),
+                Arguments.of("\"a}\".format({\"a\": 1})", "ValueError"),
+                Arguments.of("\"{}\".format({\"a\": 1})", "ValueError"),
+                Arguments.of("\"{a}\".format(1)", "TypeError"),
+                Arguments.of("\"{a}\".format()", "ValueError"));
     }
 
     @ParameterizedTest(name = "{0}")

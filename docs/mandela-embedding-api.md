@@ -282,6 +282,7 @@ Grants: `STDOUT`, `STDERR`, `STDIN`, `FILE_READ`, `FILE_WRITE`, `ENV`, `NETWORK`
 | `open()` | all ten | 200 M | 1024 | the CLI, code the runner's author wrote |
 | `console()` | `STDOUT`, `STDERR` | 20 M | 512 | a pasted snippet, a one-shot `eval`, the editor |
 | `desktop(root)` | console, `FILE_READ`, `FILE_WRITE` under `root`, `THREAD` | 50 M | 1024 | a desktop automation |
+| `probe(root)` | `desktop(root)` plus read-only `ENV` | 50 M | 1024 | a CI probe that reads a build's own variables |
 | `webPage()` | none | 5 M | 256 | anything that arrived from an untrusted source |
 
 `FILE_READ`/`FILE_WRITE` are enforced against `fileRoot` by `resolve(path, what)`,

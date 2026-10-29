@@ -113,20 +113,30 @@ shipped script hand-rolled at the time this list was written:
 
 Anything a *script* can observe that it could not before — new syntax, new
 semantics, a new statement — moves `mandela.language` as well, and every host
-has to decide whether to accept the newer line. Candidates, none promised:
+has to decide whether to accept the newer line. All four candidates below have
+now shipped; the reasoning that shaped each stays with it, and the axis each one
+actually moved is named, because only a true grammar change moves the language
+number:
 
 - **Guard expressions on `for`** (`for (x in xs if x.ok)`) — the loop-and-filter
   idiom the gates write constantly; small to parse, small to compile. **Shipped**
   in language 1.1 — see the `[Unreleased]` entry in
-  [`CHANGELOG.md`](../CHANGELOG.md) and §5 of the language guide.
+  [`CHANGELOG.md`](../CHANGELOG.md) and §5 of the language guide. This was the
+  one candidate that moved the language axis.
 - **`match` over values and types** — the dispatch the `typeOf` chains in host
-  code emulate; must stay step-countable and fall through exhaustively-checked
-  arms only, or it is just `if` with more places to hide a bug.
+  code emulate; it stays step-countable and falls through to a `MatchError`
+  rather than a silent `null`, so it is never just `if` with more places to hide
+  a bug. **Shipped**: the machine already tested a type arm (`is Int`, `n is Int`,
+  and the `Point(x, y)` record destructure) beside the literal, guard, list and
+  `_` arms — the guide's §5 Match section now documents it, which was the only
+  thing missing.
 - **String `format` with named fields** — `"{name}:{port}"` against a `Map`,
-  for the report lines every gate assembles with `padEnd` today.
+  for the report lines every gate assembles with `padEnd` today. **Shipped** as
+  the `Str.format(fields)` member (§9 of the guide): a member addition, so it
+  rides the jar axis and leaves `mandela.language` where the `for` guard put it.
 - **A second sandbox profile for probes** — `desktop(root)` plus read-only
-  `ENV`, shaped for CI probe scripts; a `Capabilities` change, so no grammar
-  moves under it.
+  `ENV`, shaped for CI probe scripts. **Shipped** as `Capabilities.probe(root)`
+  (§10 of both guides); a `Capabilities` change, so no grammar moved under it.
 
 ### 3.3 Parked, with the reason — and parked is not "backlog"
 

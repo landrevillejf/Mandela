@@ -324,6 +324,30 @@ class EmbeddingApiTest {
         }
 
         @Test
+        @DisplayName("a probe reads its root and the environment, and no JVM type")
+        void probe() {
+            Runtime probe = Mandela.engine(Capabilities.probe(root)).build();
+            // The desktop half is unchanged: a file under the root reads, and one
+            // that climbs outside it is refused by the root, not by the grant.
+            assertEquals(11L, probe.run("use std.fs\nfs.read(\"note.txt\").length"));
+            assertEquals("PermissionError",
+                    Scripts.failure("use std.fs\nfs.read(\"../secret\")", probe).kind());
+            // The one widening over desktop: the environment a CI probe runs in is
+            // readable, so a probe may learn a build's own variables. Read from the
+            // host rather than hard-coded, so the suite says the same thing on any
+            // platform - and env is read-only, there being no grant to write one.
+            assertEquals(System.getProperty("file.separator"),
+                    probe.run("use std.env\nenv.separator"));
+            assertEquals("probe", probe.capabilities().label());
+            assertTrue(probe.capabilities().describe().contains("env"));
+            // And still no door a probe has no use for: no JVM type, no socket,
+            // no child process.
+            assertFalse(probe.capabilities().allowsJvm("java.lang.Runtime"));
+            assertFalse(probe.capabilities().isGranted(Capabilities.Grant.NETWORK));
+            assertFalse(probe.capabilities().isGranted(Capabilities.Grant.PROCESS));
+        }
+
+        @Test
         @DisplayName("'open' grants the host's environment, but still no JVM type")
         void open() {
             Runtime wild = Mandela.engine(Capabilities.open()).output(text -> { }).build();

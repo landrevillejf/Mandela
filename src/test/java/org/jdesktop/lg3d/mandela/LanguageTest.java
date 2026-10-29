@@ -276,6 +276,16 @@ class LanguageTest {
                 + "\"${name} ${len}\""));
         assertEquals("true 42 false", Scripts.display("let v: Any = 42\n"
                 + "\"${v is Int} ${v as Str} ${v is Str}\""));
+        // A type arm dispatches on what the value is: `is Type` tests it and
+        // `n is Type` tests and binds, the same `is` the expression form uses, so
+        // a host's `typeOf` chain reads as one match. The arms are tested in order
+        // and a value that fits none falls to `_`.
+        assertEquals("int:str:other", Scripts.display("fun kind(v: Any) -> Str {\n"
+                + "  match v {\n    is Int => \"int\",\n    is Str => \"str\",\n"
+                + "    _ => \"other\"\n  }\n}\n"
+                + "kind(1) + \":\" + kind(\"s\") + \":\" + kind(true)"));
+        // The binding form reads the matched value under the name it binds.
+        assertEquals("42", Scripts.display("match 41 { n is Int => n + 1, _ => 0 }"));
     }
 
     @Test

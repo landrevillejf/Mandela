@@ -1,9 +1,10 @@
 Feature: What the capability profiles allow and refuse
-  The four documented sandboxes -- console, webPage, desktop and open -- are the
-  host's promise about what a script may do. A page computes but touches nothing on
-  the machine; a desktop app reads and writes one directory and nothing above it; the
-  JVM door stays shut even when files are open. Each refusal is a PermissionError a
-  host can name to its user, quoting the sandbox that set the rule.
+  The five documented sandboxes -- console, webPage, desktop, probe and open -- are
+  the host's promise about what a script may do. A page computes but touches nothing on
+  the machine; a desktop app reads and writes one directory and nothing above it; a
+  probe is that desktop shape plus a read-only environment; the JVM door stays shut even
+  when files are open. Each refusal is a PermissionError a host can name to its user,
+  quoting the sandbox that set the rule.
 
   Background: the same program is judged by different grants
     Given a console sandbox engine
@@ -109,4 +110,33 @@ Feature: What the capability profiles allow and refuse
       env.separator.length
       """
     Then its value is '1'
+    And the sandbox does not allow the JVM type 'java.lang.Runtime'
+
+  Scenario: a probe reads the file inside its root like a desktop app
+    Given a probe sandbox engine over a temporary directory
+    When the program runs:
+      """
+      use std.fs
+      fs.read("note.txt").length
+      """
+    Then its value is '11'
+
+  Scenario: a probe reads the environment the desktop profile refuses
+    Given a probe sandbox engine over a temporary directory
+    When the program runs:
+      """
+      use std.env
+      env.separator.length
+      """
+    Then its value is '1'
+    And the sandbox describes a env grant
+
+  Scenario: a probe is still refused the file above its root and the JVM door
+    Given a probe sandbox engine over a temporary directory
+    When the program runs:
+      """
+      use std.fs
+      fs.read("../secret")
+      """
+    Then the program raises a PermissionError error
     And the sandbox does not allow the JVM type 'java.lang.Runtime'

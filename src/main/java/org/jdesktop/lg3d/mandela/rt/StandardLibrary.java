@@ -558,6 +558,85 @@ public final class StandardLibrary implements Builtins {
             }
             return source.substring(from, end);
         });
+        // The named-field interpolation every report line hand-assembles with
+        // padEnd and `+` today: "{name}:{port}" against a Map, each {field}
+        // replaced by the display of its value -- the same rendering println and
+        // ${...} use, so a string field arrives bare and a number as an author
+        // writes one. A field the Map does not carry is a refusal naming it,
+        // never a silent blank: the report that quietly drops a column is the bug
+        // this member exists to prevent. `{{` and `}}` are the literal braces, so
+        // a template can show one. There is no positional form and no format
+        // spec -- a template names its fields or it does not compile the line.
+        stringMethods.put("format", (m, self, args) -> {
+            Object fields = arg(args, 0);
+            if (fields == null || Values.isAbsent(fields)) {
+                throw missingArgument("format", 0);
+            }
+            return formatNamed(text(self), fields);
+        });
+    }
+
+    /**
+     * Replaces each {@code {field}} in {@code template} with the display of
+     * {@code fields[field]}. A doubled brace is the literal brace; a field the
+     * map does not carry, a lone or empty {@code {}}, and an unterminated brace
+     * are each refused by name and position, because a template is a contract
+     * about which values a line assembles and a hole in it is an error rather
+     * than a blank.
+     *
+     * @param template the text carrying the {@code {field}} placeholders
+     * @param fields   the map of field names to values
+     * @return the assembled text
+     */
+    private static String formatNamed(String template, Object fields) {
+        if (!(fields instanceof MandelaMap map)) {
+            throw MandelaError.type("format(...) needs a Map of fields; got a "
+                    + Values.typeName(fields));
+        }
+        StringBuilder out = new StringBuilder();
+        int at = 0;
+        int end = template.length();
+        while (at < end) {
+            char c = template.charAt(at);
+            if (c != '{' && c != '}') {
+                out.append(c);
+                at++;
+                continue;
+            }
+            // A doubled brace is the literal one; a single brace opens a field.
+            if (at + 1 < end && template.charAt(at + 1) == c) {
+                out.append(c);
+                at += 2;
+                continue;
+            }
+            if (c == '}') {
+                throw MandelaError.value("format(...) has a '}' with no field at"
+                        + " position " + at + " in '" + template + "'");
+            }
+            int close = template.indexOf('}', at + 1);
+            if (close < 0) {
+                throw MandelaError.value("format(...) has a '{' with no closing"
+                        + " '}' at position " + at + " in '" + template + "'");
+            }
+            String key = template.substring(at + 1, close);
+            if (key.isEmpty()) {
+                throw MandelaError.value("format(...) has an empty '{}' field at"
+                        + " position " + at + " in '" + template + "'");
+            }
+            if (!map.contains(key)) {
+                throw MandelaError.value("format(...) has no field '" + key + "'");
+            }
+            out.append(Values.display(map.get(key)));
+            at = close + 1;
+        }
+        // The same ceiling pad() and repeat() enforce: a template is data, but
+        // what it assembles could be many values, so the result is bounded like
+        // any other text rather than eating the heap.
+        if (out.length() > MAX_TEXT) {
+            throw MandelaError.limit("format(...) would build " + out.length()
+                    + " characters, over the " + MAX_TEXT + " character limit");
+        }
+        return out.toString();
     }
 
     /** Splits on a literal separator, or on whitespace runs when called bare. */
