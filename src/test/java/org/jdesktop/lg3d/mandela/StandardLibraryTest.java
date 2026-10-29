@@ -170,7 +170,20 @@ class StandardLibraryTest {
                 // next byte to look at, and still ends the line it is on.
                 Arguments.of("\"a\\r\\nb\\r\".lines().join(\",\")", "a,b"),
                 Arguments.of("\"\".lines().length", "0"),
-                Arguments.of("\"a  b \".words().join(\",\")", "a,b"));
+                Arguments.of("\"a  b \".words().join(\",\")", "a,b"),
+                // between is the indexOf-pair-and-substring span every scanner
+                // hand-rolls: the text strictly between the first open and the
+                // first close after it, the FIRST pair when a delimiter repeats,
+                // and null - not "" - when either delimiter is absent, so an
+                // empty span stays distinguishable from no match at all.
+                Arguments.of("\"a[b]c\".between(\"[\", \"]\")", "b"),
+                Arguments.of("\"**bold** rest\".between(\"**\", \"**\")", "bold"),
+                Arguments.of("\"[label](url)\".between(\"](\", \")\")", "url"),
+                Arguments.of("\"a-b-c\".between(\"-\", \"-\")", "b"),
+                Arguments.of("\"abc\".between(\"[\", \"]\")", "null"),
+                Arguments.of("\"[abc\".between(\"[\", \"]\")", "null"),
+                Arguments.of("\"[]\".between(\"[\", \"]\").length", "0"),
+                Arguments.of("\"abc\".between(\"a\", \"z\") == null", "true"));
     }
 
     @ParameterizedTest(name = "{0}")
@@ -662,6 +675,8 @@ class StandardLibraryTest {
                 Arguments.of("[1].count(3)", "TypeError"),
                 Arguments.of("[1].partition(3)", "TypeError"),
                 Arguments.of("\"a\".splitOnce(1)", "TypeError"),
+                Arguments.of("\"a\".between(1, \"]\")", "TypeError"),
+                Arguments.of("\"a\".between(\"[\", 1)", "TypeError"),
                 Arguments.of("use std.glob\nglob.matches(\"a\")", "ValueError"),
                 Arguments.of("use std.glob\nglob.matches(1, \"a\")", "TypeError"));
     }

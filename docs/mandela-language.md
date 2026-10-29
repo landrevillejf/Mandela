@@ -490,7 +490,7 @@ grant; `sleep` does, because it parks a host thread (`THREAD`).
 
 | Type | Members |
 | --- | --- |
-| `Str` | `length upper lower trim split splitOnce replace replaceFirst contains startsWith endsWith indexOf charAt substring toInt toDouble repeat padStart padEnd count isBlank lines words removePrefix removeSuffix` |
+| `Str` | `length upper lower trim split splitOnce replace replaceFirst contains startsWith endsWith indexOf charAt substring toInt toDouble repeat padStart padEnd count isBlank lines words removePrefix removeSuffix between` |
 | `List` | `length size isEmpty first last push add insert removeAt pop clear set get indexOf contains join map filter reduce forEach any all count partition find sort sortBy sorted sortedBy reversed slice take skip sum min max distinct flatten` |
 | `Map` | `length size isEmpty keys values get put set remove has clear merge copy forEach mapValues entries` |
 | `Range` | `length first last step isEmpty toList contains reversed sum map filter forEach any all find join min max distinct slice take skip sorted sortedBy` |
@@ -513,6 +513,20 @@ let close = t.indexOf("'", open + 1)
 
 Nothing else in the vocabulary takes an index argument: a search either finds the
 first match or reports none.
+
+One member extracts a span *between* two literal delimiters: `s.between(open,
+close)` answers the text strictly between the first `open` and the first `close`
+after it, or `null` when either delimiter is absent — the same not-found
+`List.find` answers, so a caller tests `== null` rather than guessing whether an
+empty string means an empty span or no match. It is the `indexOf`-pair-and-
+`substring` dance every scanner writes, stated once, and like everything else
+here the delimiters are literal text, never a pattern:
+
+```mandela
+let header = "## [1.2.0] - 2026-11-01"
+let version = header.between("[", "]")       // "1.2.0"
+let none = "no brackets".between("[", "]")   // null, not ""
+```
 
 ---
 

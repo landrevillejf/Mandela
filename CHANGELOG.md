@@ -40,6 +40,15 @@ for one) simply bundles whatever jar this repository produces.
   `scripts/mandela/deck-new.mnd` is the sandboxed generator that writes the `.md`
   file. The grammar is untouched, so `mandela.language` stays `1.0` and no version
   copy moves.
+- **`Str.between(open, close)`** — the text strictly between the first `open` and
+  the first `close` after it, or `null` when either delimiter is absent. It is the
+  `indexOf`-pair-and-`substring` span every scanner in `scripts/mandela/` hand-rolls
+  (a changelog header's `[version]`, a bold `**title**`, a link's label and target),
+  stated once as a member. Delimiters are literal, never a pattern, so the no-regex limit
+  (§12 of the guide) is unchanged; `null` on a miss is the same not-found
+  `List.find` answers, which keeps an empty span distinguishable from no match.
+  A member addition, so `mandela.language` stays `1.0` and no existing script
+  changes behaviour.
 
 ### Fixed
 
