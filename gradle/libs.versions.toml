@@ -1,0 +1,22 @@
+# Version catalog for the standalone Mandela build. Gradle picks this file up
+# automatically as `libs`, which is what build.gradle's dependencies block reads
+# (libs.junit.bom, libs.cucumber.java, ...). Under ProjectLookingGlass the same
+# catalog lived in the desktop's gradle/libs.versions.toml; these are the two
+# test-only stacks the language needs -- nothing here reaches the published jar,
+# which stays zero-dependency (java.base + javax.script only).
+
+[versions]
+junit = "5.11.4"
+cucumber = "7.18.1"
+
+[libraries]
+# BOMs pin the transitive versions; the individual artifacts below carry no
+# version of their own and inherit it from the platform() they are declared with.
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
+junit-platform-suite = { module = "org.junit.platform:junit-platform-suite" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+
+cucumber-bom = { module = "io.cucumber:cucumber-bom", version.ref = "cucumber" }
+cucumber-java = { module = "io.cucumber:cucumber-java" }
+cucumber-junit-platform-engine = { module = "io.cucumber:cucumber-junit-platform-engine" }

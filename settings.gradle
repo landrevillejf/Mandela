@@ -1,0 +1,5 @@
+// Project Mandela is its own single-project build: the language lives at the
+// repository root (src/main/java, src/test/java), so there is no subproject to
+// include. The version catalog in gradle/libs.versions.toml is picked up
+// automatically as `libs`.
+rootProject.name = 'mandela'

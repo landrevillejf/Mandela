@@ -1,0 +1,115 @@
+name: Deploy Documentation to GitHub Pages
+
+on:
+  push:
+    branches:
+      - master
+      - main
+    paths:
+      - 'documentation/**'
+      - '.github/workflows/deploy-docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # `git ls-remote`/`git fetch` of the release archive below need the
+          # remote, which a shallow checkout still carries as `origin`.
+          fetch-depth: 1
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+        with:
+          # Enable GitHub Pages for this repository on first run if it is not
+          # already enabled (otherwise configure-pages GETs the Pages site and
+          # gets 404 "Not Found", failing the deploy). The Pages build source is
+          # this Actions workflow; only the committed prose under documentation/
+          # is ever published (the Javadoc is git-ignored and guarded above).
+          enablement: true
+
+      # The published site is the bilingual prose under documentation/ (en/ and fr/),
+      # nothing else. The Javadoc API reference is NOT published: it is generated on
+      # demand into documentation/en/api/, which is git-ignored, so it never reaches
+      # this checkout or Pages. See documentation/README.md.
+      #
+      # Guard against an accidental re-commit of the generated Javadoc: if a tree ever
+      # appears under documentation/{en,fr}/api in a checkout, the site would publish
+      # the API on the internet, which this project explicitly does not do.
+      - name: Verify the API reference is not committed
+        run: |
+          set -eu
+          if [ -d documentation/en/api ] || [ -d documentation/fr/api ]; then
+            echo "::error::documentation/{en,fr}/api must not be committed: the Javadoc is generated on demand and is never published"
+            exit 1
+          fi
+
+      - name: Create documentation structure
+        run: |
+          mkdir -p _site
+          cp -r documentation/* _site/
+          # The site is static HTML/prose, not a Jekyll project. Without .nojekyll,
+          # GitHub's Pages build pipeline post-processes the tree and can drop or
+          # rewrite pages.
+          touch _site/.nojekyll
+          echo "Documentation copied to _site"
+
+      # The release reports are not committed, and they are not published from
+      # here either: release-reports.yml accumulates them, release by release, on
+      # the `site-releases` storage branch (releases/<version>.html carries the
+      # committed changelog page with its report links substituted in, and
+      # releases/<version>/reports/** is the generated tree). This step is the
+      # only thing that turns that branch into site content, which keeps this
+      # workflow the single editor of Pages -- and keeps `documentation/**` free of
+      # anything a build produced, exactly like the Javadoc above.
+      #
+      # Absent is normal, not a defect: the branch appears the first time a
+      # release is published through the workflow, so the site must never go red
+      # over it. Overlay order matters -- the archive is copied after the
+      # committed tree, so a published page extends its committed source instead of
+      # replacing the archive with it.
+      - name: Materialise the release archive
+        run: |
+          set -eu
+          if ! git ls-remote --exit-code --heads origin site-releases >/dev/null 2>&1; then
+            echo "no site-releases branch yet; the site carries the committed archive only"
+            exit 0
+          fi
+          git fetch --depth=1 origin site-releases
+          # Ask the tree whether it has the archive before extracting it: an empty
+          # tar stream is a warning, not a failure, and a silent nothing here is
+          # exactly the mystery this step must not become.
+          if [ -z "$(git ls-tree -d --name-only FETCH_HEAD releases)" ]; then
+            echo "site-releases carries no releases/ directory; nothing to overlay"
+            exit 0
+          fi
+          # `git archive` reads the branch straight out of the object store: no
+          # worktree, no checkout, no risk of a generated report ending up in this
+          # job's own working tree.
+          git archive --format=tar FETCH_HEAD releases | tar -x -C _site
+          echo "release archive overlaid from site-releases:"
+          find _site/releases -maxdepth 1 -name '*.html' | sort
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

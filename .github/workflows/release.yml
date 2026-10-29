@@ -1,0 +1,133 @@
+name: Release
+
+# Publishes the language jar (lg3d-mandela-<version>.jar) as a GitHub Release
+# asset when a `v*` version tag is pushed. Hosts consume Mandela by dropping the
+# jar on their classpath (or discovering it through javax.script), so the release
+# IS the artifact -- there is no distribution bundle and no update-manager
+# metadata to generate. The jar is built from the tag's source, so the published
+# artifact always matches the tagged commit.
+#
+# NOTE: for a tag push GitHub reads THIS workflow file from the tagged commit,
+# so the `push: tags` trigger below must already be on the default branch
+# (merged) before the tag is pushed -- a tag pointing at a commit that predates
+# this trigger will not fire.
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing release tag to (re)build and publish assets for (e.g. v1.1.0)'
+        required: true
+        type: string
+
+permissions:
+  # Needed to upload assets to (and, for workflow_dispatch on a tag without a
+  # release yet, create) the GitHub Release.
+  contents: write
+
+# Do not cancel an in-flight release publish: a half-uploaded asset is worse
+# than a slightly delayed one.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Build & publish the language jar
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve release tag
+        id: tag
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
+          # For a `push` on a tag, github.ref_name is the bare tag (e.g. v1.1.0).
+          REF_NAME: ${{ github.ref_name }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          case "$EVENT" in
+            push) TAG="$REF_NAME" ;;
+            *)    TAG="$INPUT_TAG" ;;   # workflow_dispatch
+          esac
+          if [ -z "$TAG" ]; then
+            echo "ERROR: could not resolve a release tag." >&2
+            exit 1
+          fi
+          VERSION="${TAG#v}"
+          # A pre-release tag (rc/alpha/beta) publishes a GitHub PRE-RELEASE,
+          # which never becomes releases/latest.
+          case "$TAG" in
+            *-rc*|*-RC*|*-alpha*|*-beta*) PRERELEASE=true ;;
+            *)                            PRERELEASE=false ;;
+          esac
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "prerelease=$PRERELEASE" >> "$GITHUB_OUTPUT"
+          echo "Resolved tag=$TAG version=$VERSION prerelease=$PRERELEASE"
+
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.tag.outputs.tag }}
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          validate-wrappers: true
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      # Gate the release on the full suite, then assemble the jar.
+      - name: Test and build the jar
+        run: ./gradlew build --stacktrace
+
+      - name: Stage the release assets
+        run: |
+          set -euo pipefail
+          STAGING="$(pwd)/release-assets"; mkdir -p "$STAGING"
+          shopt -s nullglob
+          JARS=(build-gradle/libs/lg3d-mandela-*.jar)
+          if [ ${#JARS[@]} -eq 0 ]; then
+            echo "ERROR: no lg3d-mandela jar under build-gradle/libs" >&2
+            exit 1
+          fi
+          cp "${JARS[@]}" "$STAGING/"
+          cp CHANGELOG.md "$STAGING/changelog.md"
+          ls -l "$STAGING"
+
+      - name: Publish to the GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.tag.outputs.tag }}
+          VERSION: ${{ steps.tag.outputs.version }}
+          PRERELEASE: ${{ steps.tag.outputs.prerelease }}
+        run: |
+          set -euo pipefail
+          STAGING="$(pwd)/release-assets"
+          TITLE="Mandela ${VERSION}"
+          PRE_FLAG=()
+          if [ "${PRERELEASE:-false}" = "true" ]; then
+            PRE_FLAG=(--prerelease)
+            TITLE="Mandela ${VERSION} (pre-release)"
+          fi
+          # Create the release unless it already exists (a manual publish), so
+          # the assets -- and for a STABLE release the releases/latest redirect --
+          # resolve without anyone clicking "Publish release" in the UI.
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" --title "$TITLE" \
+              --notes "Automated release build of ${TAG}." \
+              "${PRE_FLAG[@]}" --target "$GITHUB_SHA"
+          fi
+          # --clobber replaces same-named assets so a re-run is idempotent.
+          gh release upload "$TAG" --clobber "$STAGING"/lg3d-mandela-*.jar "$STAGING/changelog.md"
+          echo "Published to release $TAG (prerelease=${PRERELEASE:-false})"

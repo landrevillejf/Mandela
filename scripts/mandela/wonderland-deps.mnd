@@ -1,0 +1,172 @@
+#!/usr/bin/env mandela
+// wonderland-deps.mnd — the one-way lg3d -> wonderland dependency rule as a gate.
+//
+// Wonderland is the desktop's 3D world engine and Looking Glass is the desktop
+// that mounts it, so the arrow may only ever point one way: lg3d -> wonderland.
+// A wonderland module that reached back into org.jdesktop.lg3d.* — or declared
+// project(':lg3d-...') in its build file — would tie the world engine to the
+// desktop that hosts it, which is exactly the coupling the port exists to remove:
+// it would stop wonderland-common building headless, drag the java3d window
+// manager into the server's JVM, and make the renderer impossible to run
+// standalone. The bridge that legitimately touches lg3d (WonderlandDesktop,
+// WonderlandWorldContainer, WorldInputRouter, WonderlandDesktopPlugin) lives the
+// other way round, in lg3d-apps under org.jdesktop.lg3d.apps.wonderland, and is
+// out of scope here because it is not a wonderland-* module. Nothing in the tree
+// violates this today; the gate is what keeps a future merge from quietly
+// undoing it, the way legacy-j3d.mnd keeps the Java 3D migration from drifting
+// back. Run from the repository root:
+//
+//     java -jar lg3d-mandela/build-gradle/libs/lg3d-mandela-1.1.0.jar \
+//         run scripts/mandela/wonderland-deps.mnd -s .
+//     ./gradlew :lg3d-mandela:wonderlandDepsCheck
+//
+// Two checks, exit 0 when both hold and 2 on any finding:
+//   1. no wonderland-*/build.gradle declares a project(':lg3d-...') dependency;
+//   2. no source under any wonderland-*/src imports org.jdesktop.lg3d.*.
+
+use std.fs
+
+// The package prefix a wonderland source may never import.
+let LG3D = "org.jdesktop.lg3d"
+
+// The authority for which modules are wonderland modules: settings.gradle's own
+// include list, read back rather than hard-coded, so a renamed or added module is
+// picked up and a vanished one is a premise failure rather than a clean tree.
+let AUTHORITY = ["settings.gradle"]
+
+// Directories that are never a source: generated output and the toolchain state.
+// Dot-directories are skipped by prefix below.
+let SKIP_DIRS = ["build", "build-gradle", "libs", "ext", "node_modules", "target"]
+
+fun isSkippedName(name) {
+    name in SKIP_DIRS || name.startsWith(".")
+}
+
+// Every wonderland module settings.gradle includes, in file order. A commented
+// include is ignored; the module name is the single-quoted token after `include`.
+fun wonderlandModules(text) {
+    var out = []
+    for (line in text.split("\n")) {
+        let t = line.trim()
+        if (!t.startsWith("//") && t.startsWith("include")) {
+            let open = t.indexOf("'")
+            if (open >= 0) {
+                let rest = t.substring(open + 1)
+                let close = rest.indexOf("'")
+                if (close >= 0) {
+                    let mod = rest.substring(0, close)
+                    if (mod.startsWith("wonderland-")) { out.push(mod) }
+                }
+            }
+        }
+    }
+    return out
+}
+
+// The lg3d package a source line imports, or "" when it imports none. Only a real
+// `import` statement counts; the language has no regex, so the keyword is peeled
+// off by hand. A commented-out import is ignored because it cannot break a build.
+fun lg3dImport(line) {
+    let text = line.trim()
+    if (!text.startsWith("//") && text.startsWith("import")) {
+        var rest = text.substring("import".length).trim()
+        if (rest.startsWith("static")) { rest = rest.substring("static".length).trim() }
+        if (rest.startsWith(LG3D)) { return LG3D }
+    }
+    return ""
+}
+
+// True when a build-file line declares a Gradle project dependency on an lg3d
+// module. A `//` comment is skipped, and the match is one of the two canonical
+// spellings — project(':lg3d or project(":lg3d — so an inline comment that merely
+// mentions lg3d after a wonderland dependency is not mistaken for one.
+fun lg3dProjectDep(line) {
+    let text = line.trim()
+    if (text.startsWith("//")) { return false }
+    text.contains("project(':lg3d") || text.contains('project(":lg3d')
+}
+
+// Walk a directory collecting .java files, never entering build output.
+fun javaFiles(dir, found) {
+    for (name in fs.list(dir)) {
+        if (isSkippedName(name)) { continue }
+        let path = "${dir}/${name}"
+        if (fs.isDirectory(path)) {
+            javaFiles(path, found)
+        } else if (name.endsWith(".java")) {
+            found.push(path)
+        }
+    }
+    return found
+}
+
+// ---------------------------------------------------------------------
+// the premise: read it before the checks, so a moved settings.gradle or a
+// vanished module is reported as such and never as a clean tree.
+// ---------------------------------------------------------------------
+
+for (needed in AUTHORITY) {
+    if (!fs.exists(needed)) { error("${needed} is missing, so wonderland-deps.mnd can prove nothing", "ViolationError") }
+}
+
+let modules = wonderlandModules(fs.read("settings.gradle"))
+if (modules.length == 0) {
+    error("settings.gradle includes no wonderland-* module, so wonderland-deps.mnd can prove nothing", "ViolationError")
+}
+for (mod in modules) {
+    if (!fs.exists("${mod}/build.gradle")) {
+        error("settings.gradle includes ${mod} but ${mod}/build.gradle is missing, so wonderland-deps.mnd can prove nothing", "ViolationError")
+    }
+}
+
+var findings = []
+var unreadable = []
+var sourceCount = 0
+
+// 1. no wonderland build file may depend on an lg3d module.
+for (mod in modules) {
+    let build = "${mod}/build.gradle"
+    var lineNo = 0
+    for (line in fs.lines(build)) {
+        lineNo += 1
+        if (lg3dProjectDep(line)) {
+            findings.push("${build}:${lineNo} declares a project(':lg3d-...') dependency; the lg3d -> wonderland arrow may not be reversed")
+        }
+    }
+}
+
+// 2. no wonderland source may import an lg3d package. A source the reader cannot
+// decode as UTF-8 cannot carry an ASCII import anybody added in modern style, so
+// it is skipped — but named, because a skipped file is a blind spot a maintainer
+// should see rather than one hidden in a green run.
+for (mod in modules) {
+    let src = "${mod}/src"
+    if (fs.isDirectory(src)) {
+        for (doc in javaFiles(src, [])) {
+            sourceCount += 1
+            var lineNo = 0
+            try {
+                for (line in fs.lines(doc)) {
+                    lineNo += 1
+                    let pkg = lg3dImport(line)
+                    if (pkg.length > 0) {
+                        findings.push("${doc}:${lineNo} imports ${pkg}.*; a wonderland source may not reach back into the desktop")
+                    }
+                }
+            } catch (e) {
+                unreadable.push(doc)
+            }
+        }
+    }
+}
+
+println("scanned ${modules.length} wonderland module(s) and ${sourceCount} source file(s)")
+for (u in unreadable) {
+    println("  unreadable, skipped: ${u}")
+}
+if (findings.length == 0) {
+    println("no wonderland module depends on or imports Looking Glass; the lg3d -> wonderland arrow holds")
+} else {
+    for (f in findings) { println("  dependency violation: ${f}") }
+    error("${findings.length} wonderland-deps finding(s)", "ViolationError")
+}
