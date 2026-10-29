@@ -242,6 +242,32 @@ class IterationTest {
         assertEquals("[\"A\", \"B\"]", loop("[k, v] in E", ".add(k)"));
     }
 
+    @Test
+    @DisplayName("a guard skips the elements its condition refuses")
+    void theGuardFiltersTheWalk() {
+        // The guard is a `continue` written into the header: an element whose
+        // condition is falsy never reaches the body, and one whose condition is
+        // truthy runs it exactly once. It reads the loop variable, so the binding
+        // is in scope before the guard is judged.
+        assertEquals("[3, 4, 5]", loop("i in 1..5 if i > 2", ".add(i)"));
+        assertEquals("[2, 4]", loop("i in 1..5 if i % 2 == 0", ".add(i)"));
+        assertEquals("[]", loop("i in 1..5 if false", ".add(i)"));
+        assertEquals("[1, 2, 3, 4, 5]", loop("i in 1..5 if true", ".add(i)"));
+        // The pair spelling guards on the bound names, and the guard sits inside
+        // the parenthesised header exactly as it does in the bare one.
+        assertEquals("[\"b=2\"]",
+                loop("k, v in {\"a\": 1, \"b\": 2} if v > 1", ".add(\"${k}=${v}\")"));
+        assertEquals("[3, 4, 5]",
+                Scripts.display("var out = []\nfor (i in 1..5 if i > 2) { out.add(i) }\nout"));
+        // A guard is not the body: a loop whose body opens with an `if` statement
+        // still runs that body for every element, filtering nothing at the header.
+        assertEquals("[1, 2, 3]", Scripts.display(
+                "var out = []\nfor x in 1..3 {\n  if x > 0 { out.add(x) }\n}\nout"));
+        // And `break` in the body the guard protects still ends the whole walk.
+        assertEquals("[3]",
+                loop("i in 1..5 if i > 2", ".add(i)\n  if i == 3 { break }"));
+    }
+
     // -- a range is the sequence the cursor trusts --------------------------
 
     static Stream<Arguments> counts() {

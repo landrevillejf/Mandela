@@ -106,6 +106,16 @@ class SyntaxTest {
                 // what a Java or Kotlin author types first.
                 Arguments.of("for (i in 1..3) { i }"),
                 Arguments.of("for (k, v in {\"a\": 1}) { k }"),
+                // The optional `if` guard filters the sequence. It is read on the
+                // header's own line, so a body that opens with an `if` statement
+                // stays a statement and never becomes a guard -- the fourth case
+                // pins exactly that, and the third proves a call iterable keeps its
+                // block as the body while the guard sits between the two.
+                Arguments.of("for i in 1..5 if i > 2 { i }"),
+                Arguments.of("for (i in 1..5 if i > 2) { i }"),
+                Arguments.of("fun items() -> List { [1, 2, 3] }\nvar out = 0\nfor x in items() if x > 1 { out += x }\nout"),
+                Arguments.of("for k, v in {\"a\": 1} if k == \"a\" { v }"),
+                Arguments.of("for x in 1..3 {\n  if x > 1 { x }\n}"),
                 Arguments.of("while (true) { break }"),
                 Arguments.of("loop { break }"),
                 // strings
@@ -196,6 +206,7 @@ class SyntaxTest {
                 Arguments.of("export let [a, b] = pair()", "single name"),
                 Arguments.of("export 1", "export"),
                 Arguments.of("for i in 0..8 step 2", "expected '{'"),
+                Arguments.of("for i in 1..3 if { i }", "a 'for' needs a condition"),
                 Arguments.of("return 1", "return"),
                 Arguments.of("break", "loop"),
                 Arguments.of("fun f() { defer }", "defer"),

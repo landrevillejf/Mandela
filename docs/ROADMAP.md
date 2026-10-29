@@ -116,7 +116,9 @@ semantics, a new statement — moves `mandela.language` as well, and every host
 has to decide whether to accept the newer line. Candidates, none promised:
 
 - **Guard expressions on `for`** (`for (x in xs if x.ok)`) — the loop-and-filter
-  idiom the gates write constantly; small to parse, small to compile.
+  idiom the gates write constantly; small to parse, small to compile. **Shipped**
+  in language 1.1 — see the `[Unreleased]` entry in
+  [`CHANGELOG.md`](../CHANGELOG.md) and §5 of the language guide.
 - **`match` over values and types** — the dispatch the `typeOf` chains in host
   code emulate; must stay step-countable and fall through exhaustively-checked
   arms only, or it is just `if` with more places to hide a bug.

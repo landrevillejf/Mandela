@@ -629,6 +629,14 @@ public final class Compiler {
             emit(Op.ITER_VALUE, stmt.line());
             bind(stmt.pattern(), true, stmt.line(), stmt.column());
         }
+        // A guard is a `continue` when it is falsy: jump back to the ITER_NEXT
+        // test at `start`, which is exactly where an explicit `continue` in the
+        // body lands. The target is behind us, so its offset is already known and
+        // needs no patching, and JMP_IF_FALSE pops the value the guard pushed.
+        if (stmt.guard() != null) {
+            expr(stmt.guard());
+            emit(Op.JMP_IF_FALSE, start, stmt.line());
+        }
         LoopCtx ctx = loopBody(stmt.body(), start);
         emit(Op.JMP, start, stmt.line());
         scope.builder.patch(exit, scope.builder.position());

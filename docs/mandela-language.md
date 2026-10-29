@@ -1,6 +1,6 @@
 # The Mandela Programming Language
 
-**Project Mandela** · language version 1.0 · file extension `.mnd`
+**Project Mandela** · language version 1.1 · file extension `.mnd`
 
 Mandela is Project Looking Glass's own desktop scripting language: a small,
 fast, dynamically typed language with a Java/Kotlin-shaped surface, built to be
@@ -231,6 +231,8 @@ for name in list { }
 for [key, value] in map { }          // destructure each entry
 for key, value in map { }
 for (entry in map) { }               // parentheses accepted
+for x in list if x > 0 { }           // an optional guard filters the walk
+for (x in list if x > 0) { }         // inside the parentheses too
 ```
 
 A `for` header is `<pattern> in <expression>`, and one name always binds the
@@ -245,6 +247,17 @@ an object (its assigned fields, in assignment order), an enum **type** (its
 constants) and `null`, which is the empty sequence so a loop over a name that
 may be unset needs no guard. Anything else raises a `TypeError` that names the
 type and lists the ones that do work.
+
+An optional `if <guard>` after the iterable filters the walk:
+`for x in xs if x.ok { … }` visits only the elements whose guard is truthy, and
+skips the rest exactly as a `continue` at the top of the body would — the
+loop-and-filter idiom a caller otherwise writes as a `filter` before the loop or
+an `if` around the whole body. The guard reads the loop variable (it is bound
+before the guard is judged) and belongs to the header's own line, so a body that
+*opens* with an `if` statement is a statement and never a guard:
+`for x in xs {` on one line and `if … { … }` on the next filters nothing at the
+header. There is no `else` on the guard and no second condition — write the rest
+of the test into the guard expression (`if a and b`) or into the body.
 
 The loop reads the live container: appending to a list from its own loop makes
 the new element trip, and removing one shifts what comes after it.
