@@ -11,23 +11,26 @@ release will offer, with the reason attached.
 ## 1. A life outside Looking Glass
 
 The module depends on nothing: `java.base` plus `javax.script`, no AWT, no
-Swing, no Java 3D, no `lg3d-core` import. That single constraint is the whole
+Swing, no Java 3D, no host-framework import. That single constraint is the whole
 answer — a language with no host to lean on is a library, and a library that
-names no UI toolkit runs wherever a JVM does. Five such lives are already real:
+names no UI toolkit runs wherever a JVM does. Five such lives are already real,
+three of them in this repository alone and two downstream in a host that embeds
+the same jar:
 
 | Where | What runs there | What it is granted |
 | --- | --- | --- |
-| **This repository's CI** | the eleven gates in [`scripts/mandela/`](../scripts/mandela/README.md) — link checkers, version-consistency gates, a start-menu audit, an accelerator-conflict gate, an i18n contract — via `./gradlew repositoryChecks` | `desktop(root)`: files under the repository root, console, a step budget |
+| **This repository's CI** | the eight gates in [`scripts/mandela/`](../scripts/mandela/README.md) — link checkers, version-consistency gates, a changelog-shape gate, the automation's own wiring — via `./gradlew repositoryChecks` | `desktop(root)`: files under the repository root, console, a step budget |
 | **Any terminal** | the `mandela` CLI: `run`, `check`, `eval`, the REPL (`mandelaRepl`) | whatever the invocation says, `desktop(root)` by default |
 | **Any Java or Kotlin program** | the embedding API (`Mandela`, `Runtime`, `Capabilities`, `Interop`) or JSR-223 — see the [embedding guide](mandela-embedding-api.md) | whatever the host's `Capabilities` says |
-| **Espresso** (the desktop's text editor) | the Mandela extension: run, check, disassemble, template a document | `console()`: no files, no env, 20 M steps |
-| **The Web Browser** | userscripts from `~/.lg3d/webbrowser/userscripts/*.mnd`, on every page that matches | `webPage()`: no files, no env, no host types, 5 M steps |
+| **A text-editor host** (downstream — the desktop's Espresso) | the Mandela extension: run, check, disassemble, template a document | `console()`: no files, no env, 20 M steps |
+| **A browser host** (downstream — the desktop's Web Browser) | userscripts from a per-host directory, on every page that matches | `webPage()`: no files, no env, no host types, 5 M steps |
 
-Only two of those five are the desktop. The other three — CI, terminal,
-embedder — never render a frame, and they are the reason the sandbox is a
-grant list rather than a guess: the same jar that rewrites a documentation
-site's links also runs untrusted text in a browser page, and the difference
-between those two jobs is exactly `Capabilities`, nothing else.
+Only the last two live downstream, in a desktop that embeds this jar; the other
+three — CI, terminal, embedder — are real in this repository alone. None of the
+five renders a frame from here, and that is the reason the sandbox is a grant
+list rather than a guess: the same jar that rewrites a documentation site's links
+also runs untrusted text in a browser page, and the difference between those two
+jobs is exactly `Capabilities`, nothing else.
 
 A new host costs one jar and one `Capabilities`. Nothing has to be ported,
 because there is nothing to port: no natives, no resource bundle, no toolkit.
@@ -35,12 +38,12 @@ because there is nothing to port: no natives, no resource bundle, no toolkit.
 ## 2. Mandela as a probe
 
 **Yes — for in-JVM probes, and it is the use the zero-dependency rule was
-protecting.** The desktop's own verification story (see `lg3d-core/AGENTS.md`,
-*Verifying UI changes*) runs an in-JVM probe plus internal screencapture
-because a headless test cannot construct the scene graph. The probe half of
-that story is exactly what an embedded engine is for:
+protecting.** A host that cannot construct its own object graph in a headless
+test — the ProjectLookingGlass desktop, for instance, which runs an in-JVM probe
+plus internal screencapture because a headless test cannot build the scene graph
+— gets its probe half from exactly this: an embedded engine. The shape is:
 
-1. The host JVM starts with the real classes on the classpath — the desktop, a
+1. The host JVM starts with the real classes on the classpath — a host, a
    tool, anything under test.
 2. The probe wires a `Runtime` and **binds the surface under test as host
    functions** through `Interop.fn` / `Interop.supplier` / `Interop.consumer`
@@ -70,8 +73,8 @@ What it deliberately does not buy:
   health-check script that wants `http://` is a different tool with a different
   threat model (see §3.3 below).
 - **No live 3D.** A probe answers about objects, not pixels; the screencapture
-  half of the desktop's verification stays in the host. The language never
-  grows a scene-graph import — that is `lg3d-core`'s job, and the dependency
+  half of a host's verification stays in the host. The language never
+  grows a scene-graph import — that is the host's job, and the dependency
   direction is fixed.
 - **No long-running daemon.** The engine is a callable, not a service; a probe
   runs, answers and is gone.
@@ -98,13 +101,13 @@ shipped script hand-rolled at the time this list was written:
 - `xs.count(pred)` and `xs.partition(pred)` — the report-and-split pair the
   gates' `filter` + re-filter pattern wants.
 - `std.glob` — `matches(text, pattern)` and `escape(text)`: the `*`/`?` matcher
-  the browser's `// @match` host already implements in Java, exposed as a
+  a browser host's `// @match` already implements in Java, exposed as a
   scriptable utility. Bounded by construction (a glob scans once; it does not
   backtrack), which is why it is on this list and regular expressions are not.
-- **New shipped scripts**: a changelog-shape gate (the release pages and the
-  Update Manager's dialog both parse `CHANGELOG.md`; a malformed section is
-  invisible to them until it renders wrong), and a `todo-scan` report over the
-  tree's markers, report-only like `asset-report.mnd`.
+- **New shipped scripts**: a changelog-shape gate (the generated release pages
+  parse `CHANGELOG.md`; a malformed section is invisible to them until it renders
+  wrong), and a `todo-scan` report over the tree's markers, report-only like
+  `asset-report.mnd`.
 
 ### 3.2 Later — language-surface work (both axes bump together)
 
@@ -131,16 +134,16 @@ These will not appear in a Mandela release unless the reason against them is
 | Item | Why it is out |
 | --- | --- |
 | Regular expressions | A backtracking matcher burns any step budget inside a single Java instruction; the sandbox counts machine steps, not calls. Text gets `indexOf`-family plus `std.glob` (§3.1) instead. |
-| Async / coroutines | There is no scheduler to yield to; a blocking call blocking the host thread is the host's problem, which is why Espresso runs scripts on a virtual thread *outside* the language. |
+| Async / coroutines | There is no scheduler to yield to; a blocking call blocking the host thread is the host's problem, which is why a host runs scripts on a virtual thread *outside* the language (the desktop's Espresso does exactly this). |
 | Generics, operator overloading, metaclasses | The language is a scripting surface with one consumer class — glue, automation, page logic — and each of these triples the teaching cost for zero added capability. Guide §12 states the limits plainly; a reader who wants them wants a host language. |
 | JIT | The machine is a stack VM whose step count *is* the sandbox; optimised steps could not be counted the same way. Speed-critical work is bound from the host as a function, which is faster than any JIT of the script would be. |
 | `PROCESS` / `NETWORK` grants with real calls behind them | The vocabulary exists so a host may grant without widening anything; nothing currently can satisfy it. `std.http` (GET/POST, size-capped, host-preflighted) is the only honest shape and it rewrites the browser userscript story's threat model — that needs its own design doc and its own review, not a release note. |
-| Scene-graph / lg3d-core imports | The dependency direction is fixed: `lg3d-mandela` depends on nothing. A probe sees the desktop through `Interop` bindings a host chose, never through an `import`. |
+| Scene-graph / host-framework imports | The dependency direction is fixed: `lg3d-mandela` depends on nothing. A probe sees a host through `Interop` bindings the host chose, never through an `import`. |
 
 ### 3.4 On the version axes
 
 How the two numbers move is policy, not mood — written in full in
-[`lg3d-mandela/CHANGELOG.md`](../CHANGELOG.md) and gated by
+[`CHANGELOG.md`](../CHANGELOG.md) and gated by
 [`scripts/mandela/mandela-version.mnd`](../scripts/mandela/mandela-version.mnd):
 
 - A §3.1 item bumps `mandela.version` (the jar) alone: `1.0.0 → 1.1.0`, the
@@ -148,8 +151,9 @@ How the two numbers move is policy, not mood — written in full in
 - A §3.2 item bumps both axes: a script that *can* use it lives in a world
   where `LANGUAGE_VERSION` says so.
 - A bug fix bumps the patch: `1.1.0 → 1.1.1`.
-- The desktop's release train never rewrites either number; the desktop
-  bundles whatever jar this module's own clock produced.
+- This repository's release train (`scripts/release/`) cuts the jar axis only and
+  never rewrites the language number; a downstream desktop bundles whatever jar
+  this module's own clock produced.
 
 The roadmap is a promise about direction, not about dates; the items under
 *Next* are the ones whose shape is already proven by a script in the tree that

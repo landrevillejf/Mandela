@@ -21,11 +21,12 @@ assume — which `1.69.0-dev` says about the desktop, not about this. Two axes:
 | **the language** | `Mandela.LANGUAGE_VERSION`, the manifest's `Specification-Version`, the line under the [language guide](../docs/mandela-language.md) title | what a script may assume about the grammar and the runtime | `mandela.language` in [gradle.properties](../gradle.properties) |
 
 Both are written in eight places, so [scripts/mandela/mandela-version.mnd](../scripts/mandela/mandela-version.mnd)
-compares every copy against its property and fails `:lg3d-mandela:repositoryChecks`
+compares every copy against its property and fails `repositoryChecks`
 when one disagrees. Bumping Mandela means editing the property, the two constants,
-the guide line and a new header here — in one module-scoped commit. The desktop's
-release train never rewrites Mandela's numbers; the desktop simply bundles whatever
-jar this module produces.
+the guide line and a new header here — in one module-scoped commit. This
+repository's release train (`scripts/release/`) cuts the jar axis only and never
+rewrites the language axis; a downstream host (the ProjectLookingGlass desktop,
+for one) simply bundles whatever jar this repository produces.
 
 ## [Unreleased]
 

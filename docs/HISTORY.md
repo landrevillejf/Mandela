@@ -80,16 +80,20 @@ of it is remembered.
 
 ## Where it runs today
 
+- **The repository's own CI** - the eight gates in
+  [`scripts/mandela/README.md`](../scripts/mandela/README.md) run on every
+  push in [`.github/workflows/build.yml`](../.github/workflows/build.yml).
+- **The documentation site** - `whats-new.mnd` generates the release-archive
+  pages under `documentation/releases/` that GitHub Pages publishes.
+- **Any JVM** - through the JSR-223 `ScriptEngine`, the embedding API or the
+  CLI and REPL.
+
+Downstream, in the Project Looking Glass desktop that embeds this jar:
+
 - **Espresso**, the text editor - run a script, check syntax, view bytecode.
 - **The Web Browser** - userscripts, authored with `userscript-new.mnd` and
   gated by the security model described in the
   [embedding guide](mandela-embedding-api.md).
-- **The repository's own CI** - the eleven gates in
-  [`scripts/mandela/README.md`](../scripts/mandela/README.md) run on every
-  push in [`.github/workflows/build.yml`](../.github/workflows/build.yml).
-- **The Help Center** - `whats-new.mnd` generates the guide's What's New topic.
-- **Any JVM** - through the JSR-223 `ScriptEngine`, the embedding API or the
-  CLI and REPL.
 
 ## Reading order
 

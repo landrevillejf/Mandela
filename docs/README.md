@@ -1,6 +1,6 @@
 # Project Mandela
 
-Project Mandela is the desktop scripting language for Project Looking Glass. It is a small, fast, dynamically typed language with a Java/Kotlin-shaped surface, designed to be embedded in applications rather than to stand alone.
+Project Mandela is a small, fast, dynamically typed scripting language for the JVM with a Java/Kotlin-shaped surface. It originated in the Project Looking Glass desktop and is still embedded there, but this is a standalone repository with zero dependencies: the same jar runs from its own CLI and REPL, inside a host application, or in a browser page.
 
 ## Overview
 
@@ -22,7 +22,7 @@ Mandela is a complete programming language implementation in a single JAR file, 
 - **Secure** - Capability-based security model with configurable profiles
 - **Embeddable** - Designed to run inside host applications
 - **Fast** - Interpreted bytecode with instruction budgets
-- **Well-tested** - 366 headless JUnit 5 tests
+- **Well-tested** - 1473 headless test cases (1289 JUnit 5 tests plus the 184-scenario Cucumber `MandelaSuite`)
 
 ## Module Structure
 
@@ -43,14 +43,14 @@ org.jdesktop.lg3d.mandela
 
 - **[Architecture](ARCHITECTURE.md)** - Internal architecture, package structure, and design decisions
 - **[Development Guide](DEVELOPMENT.md)** - Contributor guide with build, test, and coding guidelines
-- **[Mandela at Work](USAGE.md)** - The language in daily use: one program that walks, scans, classifies and answers, the four hosts that run it, and transcripts of the real tools
+- **[Mandela at Work](USAGE.md)** - The language in daily use: one program that walks, scans, classifies and answers, the hosts that run it, and transcripts of the real tools
 - **[Functional Analysis](FUNCTIONAL_ANALYSIS.md)** - Functional requirements, use cases, and specifications
 - **[History of the Language](HISTORY.md)** - Why the name, who created it, and the record of how it landed in Project Looking Glass
 - **[Roadmap](ROADMAP.md)** - The language's life outside the desktop, probing a running JVM, and what comes next on both version axes
 
 ### Language and API Documentation
 
-The complete language and API documentation is located in the parent project:
+The complete language and API documentation lives in this repository, alongside this file:
 
 - **[Language Guide](mandela-language.md)** - Complete language reference including syntax, types, operators, standard library, and security model
 - **[Embedding API Guide](mandela-embedding-api.md)** - How to embed Mandela in Java and Kotlin applications, including JSR-223 integration
@@ -103,12 +103,17 @@ for name in ["world", "desktop"] {
 
 ## Use Cases
 
-Mandela is used throughout Project Looking Glass:
+Mandela runs anywhere a JVM does. In this repository it is its own automation surface:
 
-- **Espresso** (text editor) - Run scripts, check syntax, view bytecode
-- **Web Browser** - Userscripts for page automation
-- **Desktop automation** - File operations, application integration
-- **Repository automation** - The project's own CI tools are written in Mandela
+- **Repository automation** - the project's own CI gates are written in Mandela ([`scripts/mandela/`](../scripts/mandela/))
+- **The CLI and REPL** - run a script, check syntax, dump bytecode, evaluate a one-liner
+- **Any JVM host** - through the embedding API or JSR-223 `ScriptEngine`
+
+Downstream, in the Project Looking Glass desktop that embeds this jar:
+
+- **Espresso** (text editor) - run scripts, check syntax, view bytecode
+- **Web Browser** - userscripts for page automation
+- **Desktop automation** - file operations, application integration
 
 ## Security Model
 
