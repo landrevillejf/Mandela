@@ -41,7 +41,7 @@ for name in ["world", "desktop"] {
 mandela run hello.mnd                    # run it
 mandela check hello.mnd                  # compile it, run nothing
 mandela repl                             # evaluate lines, interactively
-./gradlew :lg3d-mandela:mandelaRun -Pscript=hello.mnd
+./gradlew mandelaRun -Pscript=hello.mnd
 ```
 
 A program is a list of statements; the value of the last expression is the

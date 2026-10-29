@@ -11,7 +11,7 @@
 // line of defence: it reads the document the way the readers do and fails
 // where they would quietly drop a section.
 //
-//     ./gradlew :lg3d-mandela:changelogCheck
+//     ./gradlew changelogCheck
 //     java -jar lg3d-mandela/build-gradle/libs/lg3d-mandela-1.1.0.jar \
 //         run scripts/mandela/changelog-check.mnd -s .
 //

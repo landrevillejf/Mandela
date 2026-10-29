@@ -18,7 +18,7 @@
 //
 //     java -jar lg3d-mandela/build-gradle/libs/lg3d-mandela-1.1.0.jar \
 //         run scripts/mandela/wonderland-deps.mnd -s .
-//     ./gradlew :lg3d-mandela:wonderlandDepsCheck
+//     ./gradlew wonderlandDepsCheck
 //
 // Two checks, exit 0 when both hold and 2 on any finding:
 //   1. no wonderland-*/build.gradle declares a project(':lg3d-...') dependency;

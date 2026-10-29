@@ -16,7 +16,7 @@
 //
 //     java -jar lg3d-mandela/build-gradle/libs/lg3d-mandela-1.1.0.jar \
 //         run scripts/mandela/exclusions.mnd -s .
-//     ./gradlew :lg3d-mandela:exclusionsCheck
+//     ./gradlew exclusionsCheck
 //
 // Four checks, exit 0 when all hold and 2 on any finding:
 //   1. every source exclude in any module's build file is named in that

@@ -263,7 +263,7 @@ Project Mandela is a scripting language designed for the Project Looking Glass d
 
 **Main Flow**:
 1. CI triggers repository checks.
-2. Gradle runs `:lg3d-mandela:repositoryChecks`.
+2. Gradle runs `repositoryChecks`.
 3. Each automation script runs with repository root as sandbox.
 4. Script walks the file tree.
 5. Script performs checks (e.g., documentation links, version consistency).
@@ -305,7 +305,7 @@ Project Mandela is a scripting language designed for the Project Looking Glass d
 
 ### Language Syntax
 
-The Mandela language syntax is specified in detail in the [Language Guide](../../docs/mandela-language.md). Key specifications include:
+The Mandela language syntax is specified in detail in the [Language Guide](mandela-language.md). Key specifications include:
 
 - **Lexical rules**: Comments, strings, numbers, identifiers, reserved words
 - **Types**: Int, Double, Bool, Str, List, Map, Range, Null, Fun, Class, Instance, Error
@@ -326,7 +326,7 @@ The standard library is organized into modules:
 - **std.env**: Environment access (requires ENV)
 - **std.time**: Time operations (sleep requires THREAD)
 
-Each module is specified in the [Language Guide](../../docs/mandela-language.md) §9.
+Each module is specified in the [Language Guide](mandela-language.md) §9.
 
 ### Security Model
 
@@ -338,7 +338,7 @@ The security model is capability-based:
 - **Confinement**: Filesystem operations confined to a root directory
 - **JVM access**: Explicit allow-list only, no reflection
 
-Detailed specification in [Language Guide](../../docs/mandela-language.md) §10.
+Detailed specification in [Language Guide](mandela-language.md) §10.
 
 ### Embedding API
 
@@ -351,7 +351,7 @@ The embedding API provides:
 - **EditorServices**: Editor integration
 - **MandelaScriptEngine**: JSR-223 implementation
 
-Detailed specification in [Embedding API Guide](../../docs/mandela-embedding-api.md).
+Detailed specification in [Embedding API Guide](mandela-embedding-api.md).
 
 ### Command-Line Interface
 
@@ -493,8 +493,8 @@ Exit codes are part of the contract with scripts and CI.
 
 ## References
 
-- [Language Guide](../../docs/mandela-language.md) - Complete language reference
-- [Embedding API Guide](../../docs/mandela-embedding-api.md) - Host integration
+- [Language Guide](mandela-language.md) - Complete language reference
+- [Embedding API Guide](mandela-embedding-api.md) - Host integration
 - [Architecture](ARCHITECTURE.md) - Internal architecture
 - [Development Guide](DEVELOPMENT.md) - Contributor guide
 - [AGENTS.md](../AGENTS.md) - Module-specific guidance

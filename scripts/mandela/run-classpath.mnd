@@ -30,7 +30,7 @@
 // Gate, exit 2 on a finding. Run from the repository root:
 //
 //     mandela run scripts/mandela/run-classpath.mnd -s .
-//     ./gradlew :lg3d-mandela:runClasspathCheck
+//     ./gradlew runClasspathCheck
 //
 // A deliberate absence goes in ABSENT below with the reason the build file gives;
 // an entry that stops being true is itself a finding.

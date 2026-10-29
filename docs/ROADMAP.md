@@ -3,7 +3,7 @@
 What Mandela is when nobody is looking at a 3D desktop, whether it can be used
 to probe a running program, and what comes next for the language. The numbered
 promises the language already makes live in the
-[language guide](../../docs/mandela-language.md) and
+[language guide](mandela-language.md) and
 [Functional Analysis](FUNCTIONAL_ANALYSIS.md); this document is about the parts
 of that surface a host or a maintainer has to *choose* — and about the ones no
 release will offer, with the reason attached.
@@ -17,9 +17,9 @@ names no UI toolkit runs wherever a JVM does. Five such lives are already real:
 
 | Where | What runs there | What it is granted |
 | --- | --- | --- |
-| **This repository's CI** | the eleven gates in [`scripts/mandela/`](../../scripts/mandela/README.md) — link checkers, version-consistency gates, a start-menu audit, an accelerator-conflict gate, an i18n contract — via `./gradlew :lg3d-mandela:repositoryChecks` | `desktop(root)`: files under the repository root, console, a step budget |
+| **This repository's CI** | the eleven gates in [`scripts/mandela/`](../scripts/mandela/README.md) — link checkers, version-consistency gates, a start-menu audit, an accelerator-conflict gate, an i18n contract — via `./gradlew repositoryChecks` | `desktop(root)`: files under the repository root, console, a step budget |
 | **Any terminal** | the `mandela` CLI: `run`, `check`, `eval`, the REPL (`mandelaRepl`) | whatever the invocation says, `desktop(root)` by default |
-| **Any Java or Kotlin program** | the embedding API (`Mandela`, `Runtime`, `Capabilities`, `Interop`) or JSR-223 — see the [embedding guide](../../docs/mandela-embedding-api.md) | whatever the host's `Capabilities` says |
+| **Any Java or Kotlin program** | the embedding API (`Mandela`, `Runtime`, `Capabilities`, `Interop`) or JSR-223 — see the [embedding guide](mandela-embedding-api.md) | whatever the host's `Capabilities` says |
 | **Espresso** (the desktop's text editor) | the Mandela extension: run, check, disassemble, template a document | `console()`: no files, no env, 20 M steps |
 | **The Web Browser** | userscripts from `~/.lg3d/webbrowser/userscripts/*.mnd`, on every page that matches | `webPage()`: no files, no env, no host types, 5 M steps |
 
@@ -141,7 +141,7 @@ These will not appear in a Mandela release unless the reason against them is
 
 How the two numbers move is policy, not mood — written in full in
 [`lg3d-mandela/CHANGELOG.md`](../CHANGELOG.md) and gated by
-[`scripts/mandela/mandela-version.mnd`](../../scripts/mandela/mandela-version.mnd):
+[`scripts/mandela/mandela-version.mnd`](../scripts/mandela/mandela-version.mnd):
 
 - A §3.1 item bumps `mandela.version` (the jar) alone: `1.0.0 → 1.1.0`, the
   way the whole of §3.1 shipped.
@@ -162,4 +162,4 @@ because that is the only way the three copies of a feature stay one feature.
 See also: [README.md](README.md) - the module's index ·
 [USAGE.md](USAGE.md) - the language in daily use ·
 [HISTORY.md](HISTORY.md) - why this name ·
-[language guide](../../docs/mandela-language.md) - what the language promises
+[language guide](mandela-language.md) - what the language promises

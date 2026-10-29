@@ -14,7 +14,7 @@
 //
 //     java -jar lg3d-mandela/build-gradle/libs/lg3d-mandela-1.1.0.jar \
 //         run scripts/mandela/ui-strings.mnd -s .
-//     ./gradlew :lg3d-mandela:uiStrings
+//     ./gradlew uiStrings
 //
 // It is a REPORT and never a gate: it always exits 0. A literal in a
 // constructor is not a defect — the string may be a value rather than a label

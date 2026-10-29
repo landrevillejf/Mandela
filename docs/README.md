@@ -52,8 +52,8 @@ org.jdesktop.lg3d.mandela
 
 The complete language and API documentation is located in the parent project:
 
-- **[Language Guide](../../docs/mandela-language.md)** - Complete language reference including syntax, types, operators, standard library, and security model
-- **[Embedding API Guide](../../docs/mandela-embedding-api.md)** - How to embed Mandela in Java and Kotlin applications, including JSR-223 integration
+- **[Language Guide](mandela-language.md)** - Complete language reference including syntax, types, operators, standard library, and security model
+- **[Embedding API Guide](mandela-embedding-api.md)** - How to embed Mandela in Java and Kotlin applications, including JSR-223 integration
 - **[AGENTS.md](../AGENTS.md)** - Module-specific guidance for developers working on Mandela
 
 ## Quick Start
@@ -62,7 +62,7 @@ The complete language and API documentation is located in the parent project:
 
 ```bash
 # Using Gradle
-./gradlew :lg3d-mandela:mandelaRun -Pscript=hello.mnd
+./gradlew mandelaRun -Pscript=hello.mnd
 
 # Using the JAR (after build)
 java -jar build-gradle/libs/lg3d-mandela-<version>.jar run hello.mnd
@@ -74,19 +74,19 @@ mandela run hello.mnd
 ### Interactive REPL
 
 ```bash
-./gradlew :lg3d-mandela:mandelaRepl
+./gradlew mandelaRepl
 ```
 
 ### Building
 
 ```bash
-./gradlew :lg3d-mandela:build
+./gradlew build
 ```
 
 ### Testing
 
 ```bash
-./gradlew :lg3d-mandela:test
+./gradlew test
 ```
 
 ## Example Script

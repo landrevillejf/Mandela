@@ -18,10 +18,10 @@
 | Depended on by | `lg3d-apps` (Espresso's `MandelaTools`, the Web Browser's `MandelaUserscriptsExtension`); its jar is also resolved onto `lg3d-core`'s `run` classpath and copied into the release bundle. |
 | Jar | `build-gradle/libs/lg3d-mandela-<version>.jar`, `Main-Class: …mandela.cli.MandelaCli` |
 | Version | **Its own**, not the desktop's: `mandela.version` (the jar, `1.1.0`) and `mandela.language` (the grammar, `1.0`) in [`../gradle.properties`](../gradle.properties), mirrored in `api.Mandela`'s two constants and the jar manifest. `mandela-version.mnd` gates all eight copies; the policy and the release record are in [CHANGELOG.md](CHANGELOG.md). |
-| Build | `./gradlew :lg3d-mandela:build` |
-| Run | `./gradlew :lg3d-mandela:mandelaRun -Pscript=hello.mnd` · `:lg3d-mandela:mandelaRepl` |
-| Tests | `./gradlew :lg3d-mandela:test` — 1259 headless cases (`java.awt.headless=true`): 1075 JUnit 5 tests plus the 184-scenario Cucumber `MandelaSuite` |
-| Mutation | `./gradlew :lg3d-mandela:pitest` (report-only, on-demand, **not** in `check`) |
+| Build | `./gradlew build` |
+| Run | `./gradlew mandelaRun -Pscript=hello.mnd` · `mandelaRepl` |
+| Tests | `./gradlew test` — 1259 headless cases (`java.awt.headless=true`): 1075 JUnit 5 tests plus the 184-scenario Cucumber `MandelaSuite` |
+| Mutation | `./gradlew pitest` (report-only, on-demand, **not** in `check`) |
 | Docs | [`../docs/mandela-language.md`](../docs/mandela-language.md) (the grammar and the library) · [`../docs/mandela-embedding-api.md`](../docs/mandela-embedding-api.md) (the host contract) |
 
 **Nature of the module:** a language *is* a contract. Every grammar decision,
@@ -111,7 +111,7 @@ never silently in code.
 
 ## QA
 
-- Everything here is headless and fast: `./gradlew :lg3d-mandela:test`.
+- Everything here is headless and fast: `./gradlew test`.
   Suites by surface — `SyntaxTest` (what parses, and the exact fragment of the
   message a mistake produces), `LanguageTest` (end-to-end semantics),
   `StandardLibraryTest` (every library member), `ValuesTest` + `ValueTypesTest` +
@@ -136,14 +136,14 @@ never silently in code.
   shipped script is a complete program, unlike a guide fragment — and pins the
   header conventions (shebang, one-line purpose, the `-s` sandbox it must be run
   with) that keep that directory usable. The scripts themselves run in CI as
-  `:lg3d-mandela:repositoryChecks` (`docLinksCheck`, `htmlLinksCheck`,
+  `repositoryChecks` (`docLinksCheck`, `htmlLinksCheck`,
   `releaseCheck`, `mandelaVersionCheck`, `changelogCheck`, `startMenuAudit`,
   `i18nKeysCheck`, `legacyJ3dCheck`, `scriptsHygieneCheck`, `whatsNewCheck`),
   which are intentionally *not* part of
   `check`: they audit the whole tree, so their failures belong to the step that
   ran them, not to this module's build. `whatsNewCheck` is the one of them that
   compares a **committed generated file** (the Help Center's `whats-new.html`
-  against `CHANGELOG.md`); its generator half is `:lg3d-mandela:whatsNewRefresh`,
+  against `CHANGELOG.md`); its generator half is `whatsNewRefresh`,
   which is a plain task and never runs under `check` — a check may not rewrite
   the tree.
 - **A grammar change is a two-sided test**: add the accepted form *and* pin the
@@ -205,7 +205,7 @@ never silently in code.
   `api.Mandela`'s matching constant, the guide line under its title and a new header
   in [CHANGELOG.md](CHANGELOG.md) — `mandelaVersionCheck` is red until all four agree,
   and the desktop's `release-check.mnd` deliberately does not read them.
-- Definition of done: `:lg3d-mandela:test` green, `:lg3d-apps:test` green (the
+- Definition of done: `test` green, `:lg3d-apps:test` green (the
   hosts), both guides updated in the same PR, and no new dependency in
   `lg3d-mandela/build.gradle`.
 

@@ -18,7 +18,7 @@
 //
 //     java -jar lg3d-mandela/build-gradle/libs/lg3d-mandela-1.1.0.jar \
 //         run scripts/mandela/bgconfigs.mnd -s .
-//     ./gradlew :lg3d-mandela:bgConfigsCheck
+//     ./gradlew bgConfigsCheck
 //
 // Eight checks, exit 0 when all hold and 2 on any finding:
 //   1. BgConfig.xml carries only the two elements its reader knows;

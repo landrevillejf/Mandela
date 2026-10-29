@@ -120,7 +120,7 @@ var body = [
     '//',
     '//     java -jar lg3d-mandela/build-gradle/libs/lg3d-mandela-1.1.0.jar',
     '//         run ' + target + ' -s .',
-    '//     ./gradlew :lg3d-mandela:' + task,
+    '//     ./gradlew ' + task,
     '//',
     '// Checks, exit 0 when all hold and 2 on any finding:',
     '//   1. every path in AUTHORITY exists - a gate whose authority is gone',
