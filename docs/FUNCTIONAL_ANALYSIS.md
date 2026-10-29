@@ -77,7 +77,7 @@ Project Mandela is a scripting language designed for the Project Looking Glass d
 
 **FR4.2** The system shall support the following grants: STDOUT, STDERR, STDIN, FILE_READ, FILE_WRITE, ENV, NETWORK, JVM, PROCESS, THREAD.
 
-**FR4.3** The system shall provide pre-configured capability profiles: open, console, desktop(root), webPage.
+**FR4.3** The system shall provide pre-configured capability profiles: open, console, desktop(root), probe(root), webPage.
 
 **FR4.4** The system shall confine filesystem operations to a specified root directory.
 
