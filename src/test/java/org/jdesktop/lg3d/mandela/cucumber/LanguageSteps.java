@@ -97,6 +97,18 @@ public class LanguageSteps {
         caps = Capabilities.desktop(scratch);
     }
 
+    /**
+     * A CI probe's shape: the same temporary directory a desktop scenario reads,
+     * but under {@link Capabilities#probe(java.nio.file.Path)} -- desktop plus the
+     * read-only environment. Cleaned in {@link #tidySandbox()} like the rest.
+     */
+    @Given("a probe sandbox engine over a temporary directory")
+    public void probeSandbox() throws IOException {
+        scratch = Files.createTempDirectory("mandela-cucumber-");
+        Files.writeString(scratch.resolve("note.txt"), "alpha\nbeta\n");
+        caps = Capabilities.probe(scratch);
+    }
+
     // -- running programs -----------------------------------------------------
 
     @When("the program runs:")

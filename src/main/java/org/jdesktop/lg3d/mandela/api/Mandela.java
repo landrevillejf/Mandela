@@ -57,6 +57,9 @@ import org.jdesktop.lg3d.mandela.values.MandelaError;
  *       function;</li>
  *   <li>{@link Capabilities#desktop(java.nio.file.Path)} &mdash; a real app whose
  *       files live under one root;</li>
+ *   <li>{@link Capabilities#probe(java.nio.file.Path)} &mdash; a CI probe: the
+ *       desktop shape plus read-only environment, for a script that answers a
+ *       question about a build;</li>
  *   <li>{@link Capabilities#open()} &mdash; everything, which is the
  *       {@code mandela} command line running a script its own author wrote and
  *       nothing an embedder should reach for;</li>

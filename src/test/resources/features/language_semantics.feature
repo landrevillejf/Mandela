@@ -135,6 +135,20 @@ Feature: Language semantics end to end
       """
     Then its value is 'ace,high,low:4'
 
+  Scenario: a match dispatches on a value's type, and binds it under a name
+    When the program runs:
+      """
+      fun kind(v: Any) -> Str {
+        match v {
+          n is Int => "int:${n}",
+          is Str => "str",
+          _ => "other"
+        }
+      }
+      kind(7) + "," + kind("s") + "," + kind(true)
+      """
+    Then its value is 'int:7,str,other'
+
   Scenario: a for guard filters the elements the loop visits
     When the program runs:
       """

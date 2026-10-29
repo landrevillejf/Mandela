@@ -61,6 +61,30 @@ for one) simply bundles whatever jar this repository produces.
   compares (gradle.properties, `Mandela.LANGUAGE_VERSION`, the guide line) agree.
   The jar axis stays `1.1.0` and moves only when a release is cut. ROADMAP §3.2's
   first candidate, shipped.
+- **`Str.format(fields)`** — `"{name}:{port}".format({"name": "host", "port":
+  8080})` assembles a line from named fields, the report every gate in
+  `scripts/mandela/` otherwise builds with `padEnd` and `+`. Each `{field}` is
+  replaced by the display of its value — the same rendering `println` and
+  `${…}` use, so a string arrives bare and a number as written — `{{` and `}}`
+  are the literal braces, and a field the map does not carry raises a `ValueError`
+  naming it rather than dropping the column silently. There is no positional form
+  and no format spec. A member addition, so it rides the jar axis and leaves
+  `mandela.language` at `1.1`; ROADMAP §3.2's third candidate, shipped.
+- **`Capabilities.probe(root)`** — a fifth sandbox profile for a CI probe: the
+  `desktop(root)` shape (console, files under one root, a thread) plus read-only
+  `ENV`, so a probe may read a build's own variables while it asserts what must
+  hold about the tree. `ENV` is the only widening over `desktop`, and it is
+  read-only by nature — there is no grant to write an environment variable — so a
+  probe still gets no JVM type, no socket and no child process. A `Capabilities`
+  change, so no grammar moves under it and `mandela.language` stays `1.1`;
+  ROADMAP §3.2's fourth candidate, shipped.
+- **`match` type arms, documented** — the machine already dispatched on a value's
+  type (`is Int`, `n is Int`, and the `Point(x, y)` record destructure) beside the
+  literal, guard, list and `_` arms, but the language guide's Match section never
+  said so. §5 now documents the type arm as the same `is` the expression form
+  uses, pinned by a `LanguageTest` case and a Cucumber scenario. No behaviour
+  changes and no axis moves: this closes the gap between the grammar and its
+  guide, ROADMAP §3.2's second candidate.
 
 ### Fixed
 

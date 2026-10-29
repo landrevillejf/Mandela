@@ -273,16 +273,22 @@ match value {
     1 => "one",
     n if n > 8 => "many",
     [first] => first,                  // a list pattern binds its parts
+    is Str => "text",                  // a type test dispatches on what it is
+    n is Int => "int:${n}",            // and a named one binds the value too
     _ => "other"
 }
 ```
 
 The arms an expression takes are: a literal (`1`, `"a"`, `true`, `null`), a
 binding with an optional guard (`n if n > 8`), a list pattern
-(`[a]`, `[a, b]`) and `_` as the catch-all. There is no alternation (`2 | 3`) —
-write two arms with the same body, or a guard `n if n == 2 or n == 3` — and no
-map pattern, because a `{` inside a `match` block would be readable as an arm
-body. `match` is an expression; arms are tested in order.
+(`[a]`, `[a, b]`), a type test (`is Int`) or a named one (`n is Int`, which
+binds the value under `n` when the type holds) and `_` as the catch-all. The
+type arm is the same `is` the expression form uses (`v is Int`), so the
+`typeOf` chain a host writes to dispatch on a value reads as one `match`;
+`is` also destructures a `type` record (`Point(x, y)`). There is no alternation
+(`2 | 3`) — write two arms with the same body, or a guard `n if n == 2 or n == 3`
+— and no map pattern, because a `{` inside a `match` block would be readable as
+an arm body. `match` is an expression; arms are tested in order.
 No arm matching raises `MatchError` — falling through silently
 to `null` hides mistakes.
 
@@ -503,7 +509,7 @@ grant; `sleep` does, because it parks a host thread (`THREAD`).
 
 | Type | Members |
 | --- | --- |
-| `Str` | `length upper lower trim split splitOnce replace replaceFirst contains startsWith endsWith indexOf charAt substring toInt toDouble repeat padStart padEnd count isBlank lines words removePrefix removeSuffix between` |
+| `Str` | `length upper lower trim split splitOnce replace replaceFirst contains startsWith endsWith indexOf charAt substring toInt toDouble repeat padStart padEnd count isBlank lines words removePrefix removeSuffix between format` |
 | `List` | `length size isEmpty first last push add insert removeAt pop clear set get indexOf contains join map filter reduce forEach any all count partition find sort sortBy sorted sortedBy reversed slice take skip sum min max distinct flatten` |
 | `Map` | `length size isEmpty keys values get put set remove has clear merge copy forEach mapValues entries` |
 | `Range` | `length first last step isEmpty toList contains reversed sum map filter forEach any all find join min max distinct slice take skip sorted sortedBy` |
@@ -539,6 +545,20 @@ here the delimiters are literal text, never a pattern:
 let header = "## [1.2.0] - 2026-11-01"
 let version = header.between("[", "]")       // "1.2.0"
 let none = "no brackets".between("[", "]")   // null, not ""
+```
+
+One member assembles a line from named fields: `s.format(fields)` replaces each
+`{name}` in the template with the display of `fields["name"]`, the report line
+every gate otherwise builds with `padEnd` and `+`. A value renders exactly as
+`println` and `${…}` render it (a string bare, a number as written), a doubled
+brace `{{` or `}}` is the literal brace, and a field the map does not carry is a
+`ValueError` naming it — a template is a contract about which columns a line
+has, so a hole is refused rather than silently blank. There is no positional
+form and no format spec:
+
+```mandela
+let row = "{name}:{port}".format({"name": "host", "port": 8080})   // "host:8080"
+let lit = "{{not a field}}".format({"x": 1})                        // "{not a field}"
 ```
 
 ---
@@ -579,6 +599,7 @@ Ready-made profiles:
 | `Capabilities.open()` | code you own, run by you | yes | yes | yes | yes | 200 M | 1024 |
 | `Capabilities.console()` | a CLI script, a pasted snippet | yes | no | no | no | 20 M | 512 |
 | `Capabilities.desktop(root)` | a desktop automation | yes | under `root` | no | yes | 50 M | 1024 |
+| `Capabilities.probe(root)` | a CI probe over a build | yes | under `root` | read-only | yes | 50 M | 1024 |
 | `Capabilities.webPage()` | anything that arrived from a page | no | no | no | no | 5 M | 256 |
 
 Refusing a capability is not a silent no-op: the call raises `PermissionError`

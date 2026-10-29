@@ -24,6 +24,8 @@ Feature: The standard library as a script sees it
       | '"ab".repeat(3)'                | 'ababab'  |
       | '"7".padStart(4, "0")'          | '0007'    |
       | '"hello".length'                | '5'       |
+      | '"{name}:{port}".format({"name": "host", "port": 8080})' | 'host:8080' |
+      | '"{{x}} {v}".format({"v": 1})'  | '{x} 1'   |
 
   Scenario Outline: a List member answers as the library promises
     When the one-line program <expr> runs
@@ -161,3 +163,4 @@ Feature: The standard library as a script sees it
       | '"hello".charAt(9)'        | IndexError  |
       | 'use std.nope'             | ValueError  |
       | 'assert(1 == 2, "nope")'   | AssertError |
+      | '"{a}".format({"b": 1})'   | ValueError  |

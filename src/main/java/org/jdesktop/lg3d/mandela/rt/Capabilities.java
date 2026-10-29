@@ -30,7 +30,7 @@ import org.jdesktop.lg3d.mandela.values.MandelaError;
  * script cannot widen its own capabilities: the object is handed to the
  * {@link Runtime} and never exposed as a value.</p>
  *
- * <p>Four shapes cover the users:</p>
+ * <p>Five shapes cover the users:</p>
  * <ul>
  *   <li>{@link #open()} &mdash; the CLI and {@code mandela repl}: the real
  *       filesystem, the terminal, generous limits.</li>
@@ -40,6 +40,10 @@ import org.jdesktop.lg3d.mandela.values.MandelaError;
  *   <li>{@link #desktop(java.nio.file.Path)} &mdash; a panel, widget or app
  *       script: files under one directory, a console, the clock, no JVM types,
  *       no sockets.</li>
+ *   <li>{@link #probe(java.nio.file.Path)} &mdash; a CI probe script: the
+ *       {@link #desktop(java.nio.file.Path) desktop} shape plus read-only access
+ *       to the environment it runs in, so a probe may read a build's own
+ *       variables while it answers a question about the tree.</li>
  *   <li>{@link #webPage()} &mdash; a script embedded in the Web Browser: nothing
  *       but computing, its own console channel and a small step budget, because
  *       page content is untrusted by definition.</li>
@@ -159,6 +163,33 @@ public final class Capabilities {
         return builder().label("webpage")
                 .maxSteps(5_000_000L)
                 .maxDepth(256)
+                .build();
+    }
+
+    /**
+     * The mode for a CI probe script: the {@link #desktop(java.nio.file.Path)
+     * desktop} shape &mdash; files under one directory, a console to answer on,
+     * a thread to stop itself &mdash; plus read-only access to the environment
+     * the probe runs in, so it may read a build's own variables (a version, a
+     * flag, a path root) while it asserts what must hold about the tree.
+     *
+     * <p>The environment grant is the only widening over {@code desktop(root)},
+     * and {@code ENV} is read-only by nature: there is no grant to write an
+     * environment variable, so a probe may learn where it runs but cannot leave a
+     * mark on the process that launched it. It still gets no JVM types, no
+     * sockets and no child process &mdash; a probe answers about values, and the
+     * step budget is the watchdog that stops one which walks into a loop.</p>
+     *
+     * @param root the directory the probe may read and write
+     * @return the capability set
+     */
+    public static Capabilities probe(Path root) {
+        return builder().label("probe")
+                .grant(Grant.STDOUT).grant(Grant.STDERR)
+                .grant(Grant.FILE_READ).grant(Grant.FILE_WRITE).fileRoot(root)
+                .grant(Grant.THREAD)
+                .grant(Grant.ENV)
+                .maxSteps(50_000_000L)
                 .build();
     }
 
