@@ -211,18 +211,18 @@ for still land, because the delivery is in a `finally`.
 
 ### The repository's own CI
 
-Sixteen programs ship in `scripts/mandela/`; the eleven gates among them are what
-the build ran above wires:
+Twenty-seven programs ship in `scripts/mandela/`; the eight gates that audit trees
+present in this repository are what the build ran above wires:
 
 ```bash
-./gradlew repositoryChecks     # all eleven
+./gradlew repositoryChecks     # all eight
 ./gradlew docLinksCheck        # one of them
 ```
 
 One of them, `whats-new.mnd`, is both a **generator** and a **gate**: with the
-word `write` it renders a page of the desktop's Help Center out of
-`CHANGELOG.md`, and without it the same program compares the committed page with
-what it would write now and fails the build on a difference. That is the pattern
+word `write` it renders the release-archive pages under `documentation/releases/`
+out of `CHANGELOG.md`, and without it the same program compares the committed pages
+with what it would write now and fails the build on a difference. That is the pattern
 this repository uses: the check that ships with the thing it checks. Another,
 `mandela-version.mnd`, checks the language against itself — the jar's version and
 the language's are written in eight places, and a jar whose own documentation
@@ -254,7 +254,8 @@ LimitError: the script retired more than 20000000 instructions; a loop is probab
 2
 ```
 
-`dump` is what Espresso's *Mandela Bytecode* action shows you, and the same text
+`dump` is what a host's bytecode view shows you (the desktop's Espresso has exactly
+such an action), and the same text
 is what the machine-code tests are written in. `shape.mnd` is eight words of
 branch and a list:
 
