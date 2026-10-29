@@ -478,7 +478,7 @@ opens. The injections a script queued before it died are still flushed, from a
 ## 12. The command line, as a third host
 
 `mandela` (or `java -jar lg3d-mandela.jar`, or
-`./gradlew :lg3d-mandela:mandelaRun -Pscript=hello.mnd` / `:mandelaRepl`):
+`./gradlew mandelaRun -Pscript=hello.mnd` / `:mandelaRepl`):
 
 ```
 usage: mandela <command> [options] [args]
@@ -537,7 +537,7 @@ and `4` is there for a wrapper that wants to say *why* without parsing text.
 the two `gradle.properties` keys, these two constants, the manifest, the artifact
 name, the line under the language guide's title and the module changelog's newest
 header — and [`scripts/mandela/mandela-version.mnd`](../scripts/mandela/mandela-version.mnd)
-(`:lg3d-mandela:mandelaVersionCheck`) compares every copy against its property, so
+(`mandelaVersionCheck`) compares every copy against its property, so
 a bump that forgets a file is red in CI rather than surprising a host. Within `1.x`:
 
 - the public surface in §3–§7 and §9–§10 is the contract; the packages behind it

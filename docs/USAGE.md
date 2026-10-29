@@ -3,7 +3,7 @@
 What the language is *for* in Project Looking Glass, shown with programs that
 run. This page is a demonstration, not a reference: the syntax and the whole
 standard library are in the
-[language guide](../../docs/mandela-language.md), and the module's internals are
+[language guide](mandela-language.md), and the module's internals are
 in [ARCHITECTURE.md](ARCHITECTURE.md). Every block below is a program from this
 repository or one run for this page, and every `text` block is output the tools
 produced while it was written - nothing here is written from memory.
@@ -149,7 +149,7 @@ environment for a user name. `std.env` needs the `ENV` grant, the desktop profil
 does not carry it, and the refusal is a value the program can catch and name -
 not a silent empty string.
 
-§13 of the [language guide](../../docs/mandela-language.md) maps each shipped
+§13 of the [language guide](mandela-language.md) maps each shipped
 program in `scripts/mandela/` onto the constructs it is a worked example of; this
 page is the tour, that table is the index.
 
@@ -215,8 +215,8 @@ Sixteen programs ship in `scripts/mandela/`; the eleven gates among them are wha
 the build ran above wires:
 
 ```bash
-./gradlew :lg3d-mandela:repositoryChecks     # all eleven
-./gradlew :lg3d-mandela:docLinksCheck        # one of them
+./gradlew repositoryChecks     # all eleven
+./gradlew docLinksCheck        # one of them
 ```
 
 One of them, `whats-new.mnd`, is both a **generator** and a **gate**: with the
@@ -304,7 +304,7 @@ same branch whether the mistake is a missing brace or a division by zero.
 ## Embedding it in a host
 
 One call, no builder beyond a profile, and the answer is the script's last
-expression (from the [embedding guide](../../docs/mandela-embedding-api.md)):
+expression (from the [embedding guide](mandela-embedding-api.md)):
 
 ```java
 var engine = Mandela.engine()
@@ -348,13 +348,13 @@ host supplies a narrower one instead: the browser's `// @match` header is a glob
 `*`, `?` and literals, translated to an anchored pattern by the host, never by the
 script. The other absences - generics, overloading, coroutines, the recursion and
 frame ceilings - are listed with their reasons in §12 of the
-[language guide](../../docs/mandela-language.md).
+[language guide](mandela-language.md).
 
 ---
 
 See also: [HISTORY.md](HISTORY.md) - why this name ·
 [DEVELOPMENT.md](DEVELOPMENT.md) - working on the module ·
-[`scripts/mandela/README.md`](../../scripts/mandela/README.md) - the shipped
+[`scripts/mandela/README.md`](../scripts/mandela/README.md) - the shipped
 programs · [AGENTS.md](../AGENTS.md) - the module's rules
 
 ---

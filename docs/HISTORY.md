@@ -2,7 +2,7 @@
 
 This page records why the language is called **Mandela**, who made it, and the
 documented record of how it entered Project Looking Glass. It is history, not
-specification: what the language *does* is in the [language guide](../../docs/mandela-language.md),
+specification: what the language *does* is in the [language guide](mandela-language.md),
 and how it is built is in [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## The name
@@ -16,7 +16,7 @@ under the name **Dr. Land Evil** (landrevillejf@protonmail.com), for
 Project Looking Glass. The module's copyright line reads
 *Copyright © 2026 Jean-François Landreville (Dr. Land Evil). All rights
 reserved*, and the same attribution heads the module's own
-[CHANGELOG](../../CHANGELOG.md).
+[CHANGELOG](../CHANGELOG.md).
 
 ## Why the desktop has its own language
 
@@ -74,7 +74,7 @@ written.
 
 Measured on the day this page was written, the module is 45 Java files and
 18,885 lines in `src/main/java`, and the repository's automation is 13 shipped
-scripts in [`scripts/mandela/`](../../scripts/mandela/README.md), 10 of them
+scripts in [`scripts/mandela/`](../scripts/mandela/README.md), 10 of them
 wired gates. Every date above is `git log`, and every count is the tree; none
 of it is remembered.
 
@@ -83,10 +83,10 @@ of it is remembered.
 - **Espresso**, the text editor - run a script, check syntax, view bytecode.
 - **The Web Browser** - userscripts, authored with `userscript-new.mnd` and
   gated by the security model described in the
-  [embedding guide](../../docs/mandela-embedding-api.md).
+  [embedding guide](mandela-embedding-api.md).
 - **The repository's own CI** - the eleven gates in
-  [`scripts/mandela/README.md`](../../scripts/mandela/README.md) run on every
-  push in [`.github/workflows/build.yml`](../../.github/workflows/build.yml).
+  [`scripts/mandela/README.md`](../scripts/mandela/README.md) run on every
+  push in [`.github/workflows/build.yml`](../.github/workflows/build.yml).
 - **The Help Center** - `whats-new.mnd` generates the guide's What's New topic.
 - **Any JVM** - through the JSR-223 `ScriptEngine`, the embedding API or the
   CLI and REPL.
@@ -98,8 +98,8 @@ of it is remembered.
 - [DEVELOPMENT.md](DEVELOPMENT.md) - how to work on it
 - [FUNCTIONAL_ANALYSIS.md](FUNCTIONAL_ANALYSIS.md) - what it promises, as numbered
   requirements (`FR1`-`FR9`), use cases and error model
-- [Language guide](../../docs/mandela-language.md) and
-  [Embedding API guide](../../docs/mandela-embedding-api.md)
+- [Language guide](mandela-language.md) and
+  [Embedding API guide](mandela-embedding-api.md)
 - [AGENTS.md](../AGENTS.md) - the module's rules for its maintainers
 
 ---

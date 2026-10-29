@@ -58,9 +58,11 @@ fun isExternal(target) {
 }
 
 // Join a link onto the directory of the file that wrote it, honouring `.` and
-// `..` the way a reader would. Paths that climb out of the sandbox are refused
-// by the engine itself, which is the behaviour a checker wants: a link leaving
-// the repository is a finding, not a read.
+// `..` the way a reader would. A `..` that would climb above the sandbox root is
+// clamped at the root, not refused: an over-deep prefix (a desktop-era
+// `../../docs/x` left behind in a `docs/` file) still resolves to the in-repo
+// target, so the check stays useful on a tree mid-migration. What is a finding is
+// a target that is genuinely absent from the tree once the path is joined.
 fun resolvePath(docPath, target) {
     var parts = docPath.split("/")
     parts.removeAt(parts.length - 1)              // drop the file's own name

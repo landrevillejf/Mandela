@@ -17,7 +17,7 @@
 //
 //     java -jar lg3d-mandela/build-gradle/libs/lg3d-mandela-1.1.0.jar \
 //         run scripts/mandela/help-topics.mnd -s .
-//     ./gradlew :lg3d-mandela:helpTopicsCheck
+//     ./gradlew helpTopicsCheck
 //
 // Nine checks, exit 0 when all hold and 2 on any finding:
 //   1. the bundle is the bundle the build file and the panel describe (premise);

@@ -25,7 +25,7 @@ import org.junit.platform.suite.api.Suite;
  * Platform engine inside the module's ordinary {@code test} task.
  *
  * <p>Why a suite class rather than per-feature runners: the module holds exactly
- * one JUnit Platform entry point, so {@code ./gradlew :lg3d-mandela:test} runs the
+ * one JUnit Platform entry point, so {@code ./gradlew test} runs the
  * JUnit 5 unit suites and the Gherkin scenarios together, and JaCoCo folds both into
  * one coverage report (a scenario that exercises the VM counts toward the same
  * numbers as a {@code @Test}). The {@code glue} package is this one, so every step

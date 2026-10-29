@@ -110,9 +110,9 @@ tasks.named('test') {
 // ---------------------------------------------------------------------------
 // mandelaRun: run a script with the freshly built engine, no packaging step
 // ---------------------------------------------------------------------------
-// `./gradlew :lg3d-mandela:mandelaRun -Pscript=hello.mnd` executes a Mandela
+// `./gradlew mandelaRun -Pscript=hello.mnd` executes a Mandela
 // source file on the module's own classes (not the jar), and
-// `./gradlew :lg3d-mandela:mandelaRepl` starts the interactive REPL. Both are
+// `./gradlew mandelaRepl` starts the interactive REPL. Both are
 // developer conveniences; the desktop uses the packaged jar on its run
 // classpath instead (see lg3d-core/build.gradle).
 tasks.register('mandelaRun', JavaExec) {

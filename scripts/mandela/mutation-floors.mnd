@@ -23,14 +23,14 @@
 //   * prose that names one configured module is a claim about the build, and the
 //     build says otherwise. The sentence "the only module this repository
 //     configures PIT for" is pinned here as a finding, in both directions: the
-//     workflows may not run `:lg3d-mandela:pitest` alone, and the docs may not
+//     workflows may not run `pitest` alone, and the docs may not
 //     call a single module the exception.
 //
 // Run from the repository root:
 //
 //     java -jar lg3d-mandela/build-gradle/libs/lg3d-mandela-1.1.0.jar \
 //         run scripts/mandela/mutation-floors.mnd -s .
-//     ./gradlew :lg3d-mandela:mutationFloorsCheck
+//     ./gradlew mutationFloorsCheck
 //
 // Gate, exit 2 on a finding. Every exemption must name a module with a suite, in
 // settings.gradle, with an integer threshold between 1 and 99 and a reason in
