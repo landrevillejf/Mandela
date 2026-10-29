@@ -155,8 +155,8 @@ tasks.register('mandelaRepl', JavaExec) {
 // prose, a gate on the background manager's
 // menu against the art the tree ships, a gate on the Help Center's JavaHelp
 // bundle - its HelpSet, map, Contents, Index, topics and the headless test's
-// copies of the same lists - a freshness gate on the generated
-// What's New help topic and on the release archive drawn from the same changelog,
+// copies of the same lists - a freshness gate on the generated release archive
+// drawn from the same changelog,
 // and a gate on the automation's own wiring. They
 // are ordinary `mandela run` invocations, so
 // the only thing these tasks add is the sandbox and the classpath -- run against
@@ -224,7 +224,7 @@ mandelaCheck('helpTopicsCheck', 'help-topics.mnd',
 mandelaCheck('scriptsHygieneCheck', 'scripts-hygiene.mnd',
         'Fail when a Mandela gate is unwired, left out of repositoryChecks, or missing from the scripts README.')
 mandelaCheck('whatsNewCheck', 'whats-new.mnd',
-        "Fail when the generated What's New help topic or a documentation/releases/ archive page no longer matches CHANGELOG.md.")
+        "Fail when a generated documentation/releases/ archive page or its index no longer matches CHANGELOG.md.")
 mandelaCheck('mutationFloorsCheck', 'mutation-floors.mnd',
         'Fail when a PIT exemption names a module with no suite, a threshold is spelled in a module build file, or CI stops running and publishing mutation testing per module.')
 mandelaCheck('cveScopeCheck', 'cve-scope.mnd',
@@ -234,18 +234,18 @@ tasks.register('repositoryChecks') {
     group = 'verification'
     description = 'Run every Mandela script that audits this standalone repository.'
     // Standalone subset: the gates that audit THIS repository (its documentation
-    // links, its jar/version agreement, its changelog shape, its Java 3D import
-    // hygiene and the automation's own wiring). Every other mandelaCheck task
-    // stays registered and individually runnable, but audits the ProjectLookingGlass
+    // links, its Pages site, its jar/version agreement, its changelog shape, the
+    // freshness of the generated release archive, its Java 3D import hygiene and
+    // the automation's own wiring). Every other mandelaCheck task stays
+    // registered and individually runnable, but audits the ProjectLookingGlass
     // desktop tree (lg3d-core, lg3d-apps, the start menu, the Help Center, the
     // shell i18n bundle, the wonderland modules, the desktop build's coverage /
-    // mutation / CVE / exclusion maps) or the generated documentation/ Pages site,
-    // none of which exist in this repository; scripts-hygiene.mnd lists them in
-    // DESKTOP_ONLY so their absence from this aggregate is deliberate, not rot.
-    // htmlLinksCheck and whatsNewCheck return to the aggregate once the
-    // documentation/ site is generated here.
-    dependsOn 'docLinksCheck', 'releaseCheck', 'mandelaVersionCheck',
-            'changelogCheck', 'scriptsHygieneCheck', 'legacyJ3dCheck'
+    // mutation / CVE / exclusion maps), none of which exist in this repository;
+    // scripts-hygiene.mnd lists them in DESKTOP_ONLY so their absence from this
+    // aggregate is deliberate, not rot.
+    dependsOn 'docLinksCheck', 'htmlLinksCheck', 'releaseCheck',
+            'mandelaVersionCheck', 'changelogCheck', 'scriptsHygieneCheck',
+            'whatsNewCheck', 'legacyJ3dCheck'
 }
 
 // todo-scan.mnd is a report, not a gate (the asset-report.mnd kind): it always
@@ -324,15 +324,15 @@ tasks.register('uiStrings', JavaExec) {
 }
 
 // The other half of whats-new.mnd: the same script, run with its `write` mode
-// word, rendering CHANGELOG.md into the committed help topic AND into one page per
-// released version under documentation/releases/, with an index above them. A
-// generator rather than a checker, so deliberately NOT in `repositoryChecks` and NOT
-// in `check` - `check` may never rewrite a tracked file. The pair is the deal: edit
-// the changelog, run this, and whatsNewCheck (above, in CI) proves every shipped
-// page is the one the changelog describes.
+// word, rendering CHANGELOG.md into one page per released version under
+// documentation/releases/, with an index above them. A generator rather than a
+// checker, so deliberately NOT in `repositoryChecks` and NOT in `check` - `check`
+// may never rewrite a tracked file. The pair is the deal: edit the changelog, run
+// this, and whatsNewCheck (above, in CI) proves every shipped page is the one the
+// changelog describes.
 tasks.register('whatsNewRefresh', JavaExec) {
     group = 'verification'
-    description = "Regenerate the What's New help topic and the documentation/releases/ archive from CHANGELOG.md."
+    description = "Regenerate the documentation/releases/ archive from CHANGELOG.md."
     javaLauncher = javaToolchains.launcherFor {
         languageVersion = JavaLanguageVersion.of(21)
     }

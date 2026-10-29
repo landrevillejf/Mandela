@@ -30,18 +30,16 @@ let README = "${DIR}/README.md"
 
 // Gates that audit the ProjectLookingGlass desktop tree (lg3d-core, lg3d-apps,
 // the start menu, the Help Center, the shell i18n bundle, the wonderland modules,
-// the desktop build's coverage/mutation/CVE/exclusion maps) or the generated
-// documentation/ Pages site, rather than this standalone repository. They stay
-// registered as individually runnable tasks and stay documented in the README,
-// but `repositoryChecks` here does not aggregate them, because the trees they
-// read do not exist in this repo. Listed by task name so check 2 treats their
-// absence from the aggregate as deliberate rather than as dead weight.
-// (htmlLinksCheck and whatsNewCheck return to the aggregate once the
-// documentation/ site is generated here.)
+// the desktop build's coverage/mutation/CVE/exclusion maps) rather than this
+// standalone repository. They stay registered as individually runnable tasks and
+// stay documented in the README, but `repositoryChecks` here does not aggregate
+// them, because the trees they read do not exist in this repo. Listed by task
+// name so check 2 treats their absence from the aggregate as deliberate rather
+// than as dead weight.
 let DESKTOP_ONLY = [
-    "htmlLinksCheck", "startMenuAudit", "acceleratorsCheck", "i18nKeysCheck",
+    "startMenuAudit", "acceleratorsCheck", "i18nKeysCheck",
     "wonderlandDepsCheck", "runClasspathCheck", "coverageFloorsCheck",
-    "exclusionsCheck", "bgConfigsCheck", "helpTopicsCheck", "whatsNewCheck",
+    "exclusionsCheck", "bgConfigsCheck", "helpTopicsCheck",
     "mutationFloorsCheck", "cveScopeCheck"
 ]
 
