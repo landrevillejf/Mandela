@@ -487,12 +487,16 @@ public final class Ast {
 
         /**
          * {@code for (pattern in iterable) body}, over a list, map, range, string
-         * or any value that supports {@code iterate}.
+         * or any value that supports {@code iterate}. An optional {@code if guard}
+         * after the iterable filters the sequence: an element whose guard is falsy
+         * is skipped, exactly as a {@code continue} at the top of the body would.
          *
          * @param pattern  the loop variable pattern (a name or destructuring form)
          * @param iterable the expression producing the sequence
+         * @param guard    an optional per-element condition, or null when unguarded
          */
-        record For(Pattern pattern, Expr iterable, Block body, int line, int column)
+        record For(Pattern pattern, Expr iterable, Expr guard, Block body,
+                   int line, int column)
                 implements Stmt { }
 
         /** {@code loop { ... }} with {@code break} / {@code continue}. */
@@ -664,6 +668,9 @@ public final class Ast {
                 case Stmt.For f -> {
                     pattern(f.pattern());
                     expr(f.iterable());
+                    if (f.guard() != null) {
+                        expr(f.guard());
+                    }
                     block(f.body());
                 }
                 case Stmt.Loop l -> block(l.body());

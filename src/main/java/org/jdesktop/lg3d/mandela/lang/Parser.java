@@ -553,11 +553,17 @@ public final class Parser extends ExprParser {
         Ast.Pattern pattern = loopPattern();
         expectWord("in");
         Ast.Expr iterable = expression();
+        // An optional `if <guard>` filters the sequence: an element whose guard is
+        // falsy is skipped, the same as a `continue` at the top of the body. It is
+        // read on the header's own line -- no separator is skipped, unlike an
+        // `else` or a `catch` -- so a body that opens with an `if` statement stays
+        // a statement, and a guardless `for x in items() { ... }` is untouched.
+        Ast.Expr guard = matchWord("if") ? condition("for") : null;
         if (parenthesised) {
             expect(TokenKind.RPAREN, "')' after the 'for' header");
         }
         Ast.Stmt.Block body = loopBody();
-        return new Ast.Stmt.For(pattern, iterable, body, at.line(), at.column());
+        return new Ast.Stmt.For(pattern, iterable, guard, body, at.line(), at.column());
     }
 
     /**

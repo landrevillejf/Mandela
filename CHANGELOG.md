@@ -49,6 +49,18 @@ for one) simply bundles whatever jar this repository produces.
   `List.find` answers, which keeps an empty span distinguishable from no match.
   A member addition, so `mandela.language` stays `1.0` and no existing script
   changes behaviour.
+- **A guard on `for`** — `for x in xs if pred { … }` visits only the elements
+  whose guard is truthy and skips the rest, the loop-and-filter idiom the gates in
+  `scripts/mandela/` otherwise write as a `filter` before the loop or an `if`
+  around the whole body. The guard reads the loop variable and belongs to the
+  header's own line, so a body that *opens* with an `if` statement is still a
+  statement and never a guard — pinned from both sides in `SyntaxTest` and
+  `IterationTest`, with two scenarios in the Cucumber `language_semantics`
+  feature. This is new syntax a script can observe, so it moves the language
+  axis: `mandela.language` goes `1.0` → `1.1` and the three copies the gate
+  compares (gradle.properties, `Mandela.LANGUAGE_VERSION`, the guide line) agree.
+  The jar axis stays `1.1.0` and moves only when a release is cut. ROADMAP §3.2's
+  first candidate, shipped.
 
 ### Fixed
 

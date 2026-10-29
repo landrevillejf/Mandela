@@ -93,7 +93,7 @@ public final class Mandela {
      * {@code scripts/mandela/mandela-version.mnd} rather than by code generation,
      * so this stays a compile-time constant a host can switch on.</p>
      */
-    public static final String LANGUAGE_VERSION = "1.0";
+    public static final String LANGUAGE_VERSION = "1.1";
 
     /**
      * The implementation version: the jar's own number, and the one a host checks

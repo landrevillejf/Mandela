@@ -135,6 +135,26 @@ Feature: Language semantics end to end
       """
     Then its value is 'ace,high,low:4'
 
+  Scenario: a for guard filters the elements the loop visits
+    When the program runs:
+      """
+      var out = []
+      for x in 1..6 if x % 2 == 0 { out.add(x) }
+      out.join(",")
+      """
+    Then its value is '2,4,6'
+
+  Scenario: a for body that opens with an if is a statement, not a guard
+    When the program runs:
+      """
+      var out = []
+      for x in 1..3 {
+        if x > 1 { out.add(x) }
+      }
+      out.join(",")
+      """
+    Then its value is '2,3'
+
   Scenario: a divide by zero is refused, never an infinity
     When the program runs:
       """
