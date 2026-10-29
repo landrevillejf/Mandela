@@ -534,6 +534,30 @@ public final class StandardLibrary implements Builtins {
         // The bare split's sibling with a name: a run of whitespace is one
         // separator, and the text neither starts nor ends with an empty field.
         stringMethods.put("words", (m, self, args) -> splitText(text(self), null));
+        // The extract-between-two-markers dance every scanner hand-rolls with a
+        // pair of indexOf calls and a substring: a changelog header's [version],
+        // a bold **title**, a [label](url). Literal delimiters only - there is no
+        // pattern engine here - and the answer is the text strictly between the
+        // first `open` and the first `close` after it. A delimiter that is absent
+        // answers null, the same not-found List.find hands back, so a caller
+        // writes `== null` rather than guessing whether "" means an empty span or
+        // no match at all. indexOf's own empty-string rule applies: an empty
+        // `open` bounds at position 0, an empty `close` bounds the span to "".
+        stringMethods.put("between", (m, self, args) -> {
+            String source = text(self);
+            String open = argText(args, 0, "between");
+            String close = argText(args, 1, "between");
+            int at = source.indexOf(open);
+            if (at < 0) {
+                return null;
+            }
+            int from = at + open.length();
+            int end = source.indexOf(close, from);
+            if (end < 0) {
+                return null;
+            }
+            return source.substring(from, end);
+        });
     }
 
     /** Splits on a literal separator, or on whitespace runs when called bare. */
