@@ -28,7 +28,7 @@ repository's release train (`scripts/release/`) cuts the jar axis only and never
 rewrites the language axis; a downstream host (the ProjectLookingGlass desktop,
 for one) simply bundles whatever jar this repository produces.
 
-## [Unreleased]
+## [1.2.0] — 2026-10-29 — Gradle / JDK 21 modernization
 
 ### Added
 

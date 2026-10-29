@@ -108,7 +108,7 @@ public final class Mandela {
      * {@code Implementation-Version}. It is deliberately <em>not</em> the desktop's
      * version: this module depends on nothing, so it releases on its own clock.</p>
      */
-    public static final String IMPLEMENTATION_VERSION = "1.1.0";
+    public static final String IMPLEMENTATION_VERSION = "1.2.0";
 
     /** The file extension a Mandela source file uses, without the dot. */
     public static final String FILE_EXTENSION = "mnd";
