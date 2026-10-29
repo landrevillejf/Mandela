@@ -129,6 +129,7 @@ Pre-configured profiles:
 - `open()` - Full access for trusted code
 - `console()` - Console only, no files
 - `desktop(root)` - File access under root
+- `probe(root)` - `desktop(root)` plus read-only environment, for a CI probe
 - `webPage()` - No access for untrusted content
 
 ## Dependencies
@@ -145,7 +146,7 @@ Pre-configured profiles:
 
 ## Version
 
-- Language version: 1.0
+- Language version: 1.1
 - Implementation version: the jar's own — `lg3d-mandela-<version>.jar`, the
   `mandela.version` property, gated by `scripts/mandela/mandela-version.mnd`
 - Requires JDK 21

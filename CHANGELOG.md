@@ -28,6 +28,19 @@ repository's release train (`scripts/release/`) cuts the jar axis only and never
 rewrites the language axis; a downstream host (the ProjectLookingGlass desktop,
 for one) simply bundles whatever jar this repository produces.
 
+## [Unreleased]
+
+### Fixed
+
+- **The secondary docs now agree with the shipped surface.** The language guide,
+  embedding guide and ROADMAP were updated in the feature PRs that added the `for`
+  guard, `Str.between`, `Str.format`, `Capabilities.probe` and the `match` type
+  arm, but two derived documents were missed: `docs/README.md`'s profile list
+  still named only `open`/`console`/`desktop`/`webPage` (no `probe(root)`) and its
+  *Language version* line still read `1.0` after the guard moved `mandela.language`
+  to `1.1`; `docs/FUNCTIONAL_ANALYSIS.md`'s FR4.3 profile enumeration was missing
+  `probe(root)` too. Docs only — no grammar, no code, no version axis moves.
+
 ## [1.2.0] — 2026-10-29 — Gradle / JDK 21 modernization
 
 ### Added
