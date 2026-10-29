@@ -26,15 +26,14 @@
 <body>
   <main>
     <h1>Project Mandela</h1>
-    <p>The desktop's own scripting language: a lexer, parser, bytecode compiler,
-    stack VM, capability-gated runtime, standard library, JSR-223 engine,
-    embedding API and CLI/REPL, in one zero-dependency jar.</p>
+    <p>An embeddable, zero-dependency scripting language for the JVM: a lexer,
+    parser, bytecode compiler, stack VM, capability-gated runtime, standard
+    library, JSR-223 engine, embedding API and CLI/REPL, in one jar. It
+    originated in the Project Looking Glass desktop and is still embedded there,
+    but this repository stands alone and the same jar runs wherever a JVM does.</p>
 
+    <h2>The language</h2>
     <div class="cards">
-      <div class="card">
-        <h3><a href="releases/index.html">Release archive</a></h3>
-        <p>One page per released version, generated from <code>CHANGELOG.md</code>.</p>
-      </div>
       <div class="card">
         <h3><a href="https://github.com/landrevillejf/Mandela/blob/main/docs/mandela-language.md">Language guide</a></h3>
         <p>The grammar, the standard library and the capability model.</p>
@@ -43,6 +42,55 @@
         <h3><a href="https://github.com/landrevillejf/Mandela/blob/main/docs/mandela-embedding-api.md">Embedding API</a></h3>
         <p>The host contract: <code>Mandela</code>, <code>Runtime</code>,
         <code>Capabilities</code>, <code>Interop</code>.</p>
+      </div>
+    </div>
+
+    <h2>The module</h2>
+    <div class="cards">
+      <div class="card">
+        <h3><a href="https://github.com/landrevillejf/Mandela/blob/main/docs/README.md">README</a></h3>
+        <p>The index: overview, features, quick start and security model.</p>
+      </div>
+      <div class="card">
+        <h3><a href="https://github.com/landrevillejf/Mandela/blob/main/docs/ARCHITECTURE.md">Architecture</a></h3>
+        <p>Package layering, the sandbox boundary and the design decisions.</p>
+      </div>
+      <div class="card">
+        <h3><a href="https://github.com/landrevillejf/Mandela/blob/main/docs/FUNCTIONAL_ANALYSIS.md">Functional analysis</a></h3>
+        <p>The numbered promises (<code>FR1</code>–<code>FR9</code>), use cases
+        and error model.</p>
+      </div>
+      <div class="card">
+        <h3><a href="https://github.com/landrevillejf/Mandela/blob/main/docs/DEVELOPMENT.md">Development guide</a></h3>
+        <p>Build, test and coding guidelines for contributors.</p>
+      </div>
+    </div>
+
+    <h2>Using it, and the project</h2>
+    <div class="cards">
+      <div class="card">
+        <h3><a href="https://github.com/landrevillejf/Mandela/blob/main/docs/USAGE.md">Mandela at work</a></h3>
+        <p>The language in daily use, the hosts that run it, real transcripts.</p>
+      </div>
+      <div class="card">
+        <h3><a href="https://github.com/landrevillejf/Mandela/blob/main/docs/ROADMAP.md">Roadmap</a></h3>
+        <p>Life beyond the desktop, probing a running JVM, what comes next.</p>
+      </div>
+      <div class="card">
+        <h3><a href="https://github.com/landrevillejf/Mandela/blob/main/docs/HISTORY.md">History</a></h3>
+        <p>Why the name, who made it, and the record of how it landed.</p>
+      </div>
+      <div class="card">
+        <h3><a href="https://github.com/landrevillejf/Mandela/blob/main/AGENTS.md">AGENTS.md</a></h3>
+        <p>The role-aware guide for everyone working on the module.</p>
+      </div>
+    </div>
+
+    <h2>Releases and source</h2>
+    <div class="cards">
+      <div class="card">
+        <h3><a href="releases/index.html">Release archive</a></h3>
+        <p>One page per released version, generated from <code>CHANGELOG.md</code>.</p>
       </div>
       <div class="card">
         <h3><a href="https://github.com/landrevillejf/Mandela">Source repository</a></h3>

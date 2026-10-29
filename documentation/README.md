@@ -27,13 +27,27 @@ for byte against the changelog and fails the build when they drift.
 
 ## The guides
 
-The language guide and the embedding guide are Markdown under `docs/` and are
-read on GitHub:
+Every guide is Markdown under [`docs/`](../docs/) and is read on GitHub; the
+portal (`index.html`) surfaces the whole set — the language guide, the embedding
+guide, the module index, architecture, functional analysis, development guide,
+usage, roadmap, history and `AGENTS.md` — each card linking to its GitHub blob
+URL:
 
 - [`docs/mandela-language.md`](../docs/mandela-language.md) — the grammar, the
   standard library and the capability model.
 - [`docs/mandela-embedding-api.md`](../docs/mandela-embedding-api.md) — the host
   contract.
+- [`docs/README.md`](../docs/README.md), [`ARCHITECTURE.md`](../docs/ARCHITECTURE.md),
+  [`FUNCTIONAL_ANALYSIS.md`](../docs/FUNCTIONAL_ANALYSIS.md),
+  [`DEVELOPMENT.md`](../docs/DEVELOPMENT.md), [`USAGE.md`](../docs/USAGE.md),
+  [`ROADMAP.md`](../docs/ROADMAP.md), [`HISTORY.md`](../docs/HISTORY.md) and
+  [`../AGENTS.md`](../AGENTS.md).
 
-The portal links to them at their GitHub blob URL, so a reader of the published
-site reaches the same text a reader of the repository does.
+The guides are Markdown, not HTML, and this site is a static copy of
+`documentation/` with no renderer in it, so the portal links them at their GitHub
+blob URL rather than republishing them: a reader of the site reaches the same
+text a reader of the repository does, and there is no second copy to drift. The
+release pages are the exception — `whats-new.mnd` renders them to HTML here, and
+re-bases each changelog link onto its blob URL (clamping any `..` that would
+escape the repository root, so a stale relative link cannot produce a dead
+`/../` address on the published page).

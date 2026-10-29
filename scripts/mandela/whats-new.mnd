@@ -138,9 +138,28 @@ fun isAddressed(target) {
     return ALREADY_ADDRESSED.any { p -> target.startsWith(p) }
 }
 
+// A changelog target is written relative to the repository root, but a stale
+// `../` (an extraction artifact the markdown pass only clamps, never refuses)
+// would climb above that root, and BLOB_BASE + "../x" is a GitHub 404 rendered
+// straight onto the published page. Resolve the target against the root here,
+// absorbing any `..` that would escape it, so the blob URL always names a real
+// path - the same clamping doc-links applies, done where the URL is built.
+fun normalizeRepoPath(target) {
+    var parts = []
+    for (piece in target.split("/")) {
+        if (piece == "." || piece == "") { continue }
+        if (piece == "..") {
+            if (parts.length > 0) { parts.removeAt(parts.length - 1) }
+            continue
+        }
+        parts.push(piece)
+    }
+    return parts.join("/")
+}
+
 fun linkHref(target, base) {
     if (base.length == 0 || isAddressed(target)) { return target }
-    return base + target
+    return base + normalizeRepoPath(target)
 }
 
 // One changelog line's worth of markdown, as HTML: `code`, **bold** and

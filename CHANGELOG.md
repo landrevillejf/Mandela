@@ -17,10 +17,10 @@ assume — which `1.69.0-dev` says about the desktop, not about this. Two axes:
 
 | Axis | Written as | Names | Authority |
 | --- | --- | --- | --- |
-| **the jar** | `Mandela.IMPLEMENTATION_VERSION`, the manifest's `Implementation-Version`, the artifact name, the header below | what a host checks when it asks whether a bug is fixed here | `mandela.version` in [gradle.properties](../gradle.properties) |
-| **the language** | `Mandela.LANGUAGE_VERSION`, the manifest's `Specification-Version`, the line under the [language guide](../docs/mandela-language.md) title | what a script may assume about the grammar and the runtime | `mandela.language` in [gradle.properties](../gradle.properties) |
+| **the jar** | `Mandela.IMPLEMENTATION_VERSION`, the manifest's `Implementation-Version`, the artifact name, the header below | what a host checks when it asks whether a bug is fixed here | `mandela.version` in [gradle.properties](gradle.properties) |
+| **the language** | `Mandela.LANGUAGE_VERSION`, the manifest's `Specification-Version`, the line under the [language guide](docs/mandela-language.md) title | what a script may assume about the grammar and the runtime | `mandela.language` in [gradle.properties](gradle.properties) |
 
-Both are written in eight places, so [scripts/mandela/mandela-version.mnd](../scripts/mandela/mandela-version.mnd)
+Both are written in eight places, so [scripts/mandela/mandela-version.mnd](scripts/mandela/mandela-version.mnd)
 compares every copy against its property and fails `repositoryChecks`
 when one disagrees. Bumping Mandela means editing the property, the two constants,
 the guide line and a new header here — in one module-scoped commit. This
@@ -40,6 +40,23 @@ for one) simply bundles whatever jar this repository produces.
   `scripts/mandela/deck-new.mnd` is the sandboxed generator that writes the `.md`
   file. The grammar is untouched, so `mandela.language` stays `1.0` and no version
   copy moves.
+
+### Fixed
+
+- **The Pages portal now reaches every guide**, and a dead link on the published
+  release archive is gone. `documentation/index.html` surfaced only the language
+  and embedding guides; it now cards the whole `docs/` set (README, architecture,
+  functional analysis, development, usage, roadmap, history) plus `AGENTS.md`,
+  each at its GitHub blob URL — the site stays a static copy with no renderer, so
+  a card opens the same Markdown a reader of the repository sees. Separately,
+  `whats-new.mnd` built a blob href by naive concatenation, so the stale
+  `../gradle.properties` link in the `[1.0.0]` entry rendered as
+  `…/blob/main/../gradle.properties` — a GitHub 404 on the live page that
+  `htmlLinksCheck` cannot see (it skips absolute `https://` refs). The generator
+  now resolves each changelog target against the repository root and clamps any
+  `..` that would escape it, the same way `doc-links.mnd` does; the archive was
+  re-rendered and `whatsNewCheck` is green. Docs and CI only — no grammar, no
+  version axis moves.
 
 ## [1.1.0] — 2026-10-13
 
