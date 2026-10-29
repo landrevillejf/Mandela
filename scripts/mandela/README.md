@@ -58,11 +58,11 @@ mandela` shebang at the top of each script expects:
 
 ```bash
 ./gradlew jar
-java -jar build-gradle/libs/lg3d-mandela-1.1.0.jar \
+java -jar build-gradle/libs/lg3d-mandela-1.2.0.jar \
     run scripts/mandela/doc-links.mnd -s .
 
 # the launcher the shebang resolves to, once the jar is where you keep it:
-#   mandela() { exec java -jar …/lg3d-mandela-1.1.0.jar "$@"; }
+#   mandela() { exec java -jar …/lg3d-mandela-1.2.0.jar "$@"; }
 ```
 
 Every script's own header repeats its invocation, because the invocation carries
